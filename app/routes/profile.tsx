@@ -1,6 +1,7 @@
 import type { Route } from "./+types/profile";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "~/hooks/useAuth";
+import { useWatchHistory } from "~/hooks/useWatchHistory";
 import { useState, useEffect } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -15,6 +16,7 @@ export function meta() {
 
 export default function ProfilePage() {
   const { profile, isLoading, logout } = useAuth();
+  const { history, isLoaded: historyLoaded } = useWatchHistory();
   const navigate = useNavigate();
   
   // Edit state
@@ -224,12 +226,16 @@ export default function ProfilePage() {
               </p>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="border border-surface-soft p-3 bg-surface-soft/20">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="border border-surface-soft p-3 bg-surface-soft/20 flex flex-col justify-center">
+                  <p className="font-mono text-[10px] text-foreground/70 uppercase tracking-widest mb-1">Judul Anime</p>
+                  <p className="font-display text-2xl text-foreground">{historyLoaded ? history.length : '-'}</p>
+                </div>
+                <div className="border border-surface-soft p-3 bg-surface-soft/20 flex flex-col justify-center">
                   <p className="font-mono text-[10px] text-foreground/70 uppercase tracking-widest mb-1">Total Episode</p>
                   <p className="font-display text-2xl text-foreground">{profile.totalEpisodesWatched}</p>
                 </div>
-                <div className="border border-surface-soft p-3 bg-surface-soft/20">
+                <div className="border border-surface-soft p-3 bg-surface-soft/20 flex flex-col justify-center">
                   <p className="font-mono text-[10px] text-foreground/70 uppercase tracking-widest mb-1">Total Waktu</p>
                   <p className="font-display text-2xl text-foreground">
                     {(profile.totalWatchTimeSeconds / 3600).toFixed(1)} <span className="text-sm">JAM</span>
