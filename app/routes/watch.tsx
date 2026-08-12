@@ -132,7 +132,7 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
                         setActiveUrl(stream.url);
                       } else {
                         try {
-                          const res = await fetch(`/api/server?id=${encodeURIComponent(stream.url)}`).then(r => r.json());
+                          const res = await fetch(`/api/sanka?id=${encodeURIComponent(stream.url)}`).then(r => r.json());
                           if (res?.url) {
                             setActiveUrl(res.url);
                           } else {
