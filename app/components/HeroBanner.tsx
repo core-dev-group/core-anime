@@ -41,7 +41,8 @@ export function HeroBanner({ items }: HeroBannerProps) {
           <img 
             src={getImageUrl(anime)} 
             alt={anime.title}
-            className="w-full h-full object-cover object-top opacity-70 md:opacity-30"
+            className="w-full h-full object-cover object-top opacity-80 md:opacity-50"
+            onError={(e) => { e.currentTarget.src = "https://placehold.co/800x1200/111111/ff3b3b?text=CORE+ANIME&font=mono"; }}
           />
           {/* Deep cinematic gradients */}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 md:via-background/80 to-background/10 md:to-transparent"></div>
@@ -119,6 +120,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
                   src={getImageUrl(currentAnime)} 
                   alt={currentAnime.title}
                   className="w-full h-full object-cover opacity-80"
+                  onError={(e) => { e.currentTarget.src = "https://placehold.co/800x1200/111111/ff3b3b?text=CORE+ANIME&font=mono"; }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>
                 <div className="absolute bottom-4 left-4 right-4 text-center">
