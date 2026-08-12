@@ -96,19 +96,12 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
           {activeUrl.includes('desustream') || activeUrl.includes('odvidhide') ? (
             <div className="absolute inset-0 w-full h-full z-20 bg-surface flex flex-col items-center justify-center gap-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-foreground/70 font-mono tracking-widest text-center text-sm px-4">
-                SERVER INI MEMBLOKIR PEMUTARAN LANGSUNG.<br/>SILAKAN TONTON DI JENDELA BARU.
+              <p className="text-foreground/70 font-mono tracking-widest text-center text-sm px-4 leading-relaxed">
+                SERVER INI SEDANG TIDAK TERSEDIA SAAT INI.<br/>
+                <span className="font-bold text-accent">SILAKAN PILIH SERVER LAIN DI BAWAH.</span>
               </p>
-              <a 
-                href={activeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 px-6 py-2 bg-accent text-background font-mono font-bold uppercase tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_rgba(255,59,59,0.5)]"
-              >
-                BUKA VIDEO &raquo;
-              </a>
             </div>
           ) : (
             <iframe 
