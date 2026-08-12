@@ -244,7 +244,7 @@ export default function WatchPage({ loaderData }: Route.ComponentProps) {
         </div>
       </div>
       
-      <PlayerClient episode={episode} slug={slug} poster={loaderData.poster} />
+      <PlayerClient key={slug} episode={episode} slug={slug} poster={loaderData.poster} />
       
       {/* Downloads Section */}
       {episode.downloadUrl?.qualities && episode.downloadUrl.qualities.length > 0 && (
