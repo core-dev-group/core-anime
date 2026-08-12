@@ -1,87 +1,66 @@
-# Welcome to React Router!
+# CoreAnime 📺 - Nonton Anime Gratis Cepat
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
-
-## Features
-
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-
-## Getting Started
-
-### Installation
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+<div align="center">
+  <h3>Streaming & Download Anime Subtitle Indonesia dengan Cepat dan Ringan</h3>
+  <p>Dibangun menggunakan React Router v7 (Remix) dengan tema desain <i>Retro / CRT / Broadcast</i> yang unik dan premium.</p>
+  <br />
+  <p>
+    Sebuah proyek persembahan dari <strong><a href="https://core-dev-group.my.id">Core Dev Group</a></strong>
+  </p>
+  <p>
+    <a href="https://github.com/core-dev-group">GitHub Core Dev Group</a> &bull; <a href="https://core-dev-group.my.id">Website Resmi</a>
+  </p>
+</div>
 
 ---
 
-Built with ❤️ using React Router.
+## 🚀 Fitur Utama
+
+- ⚡ **Nonton Anime Gratis Cepat**: Dibangun dengan teknologi React Router v7 (Remix) yang mendukung Server-Side Rendering (SSR) untuk performa memuat halaman (*loading*) yang instan.
+- 🎨 **Desain Unik Bergaya Retro**: Mengusung tema *Broadcast Retro* yang kental dengan estetika gelap, merah *(crimson red)*, animasi *scanline* CRT, dan UI yang menyerupai komputer atau mesin *arcade* klasik.
+- 📱 **Responsif & Ramah Pengguna**: Tampilan menyesuaikan semua jenis perangkat, baik HP, Tablet, maupun PC.
+- 💾 **Fitur Download Lengkap**: Mendukung unduhan video per episode hingga format *Full Batch* (seluruh episode sekaligus) dalam berbagai kualitas (360p, 480p, 720p, 1080p).
+- 🕒 **Pelacak Tontonan Pintar**: Menyimpan riwayat terakhir ditonton (*Continue Watching*) di perangkat pengguna sehingga tidak perlu khawatir lupa episode berapa.
+- 🏆 **Leaderboard Interaktif**: Sistem papan peringkat penonton teraktif yang divalidasi langsung melalui *Firebase Firestore*.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [React Router v7](https://reactrouter.com/) (sebelumnya dikenal sebagai Remix)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Backend/API**: Sanka Anime API (Scraper Otakudesu)
+- **Database/Auth**: [Firebase Firestore](https://firebase.google.com/)
+- **Deployment**: Sangat dioptimalkan untuk [Vercel](https://vercel.com/) (menggunakan `@vercel/react-router`)
+
+## 📦 Cara Menjalankan di Komputer Sendiri
+
+1. **Clone repository ini**
+   ```bash
+   git clone https://github.com/kodel-dev/core-anime.git
+   cd core-anime
+   ```
+
+2. **Install semua dependensi**
+   ```bash
+   npm install
+   ```
+
+3. **Jalankan server pengembangan**
+   ```bash
+   npm run dev
+   ```
+
+4. Buka `http://localhost:5173` di browser Anda!
+
+## 🤖 SEO & Metadata
+
+Aplikasi ini sudah diprogram agar ramah mesin pencari (SEO-friendly). Setiap halaman dan episode secara dinamis mengatur *meta tags*, *title*, dan deskripsi untuk menargetkan kata kunci **"nonton anime gratis cepat"**, **"download anime batch"**, dan **"streaming anime sub indo"**.
+
+## 👥 Tentang Core Dev Group
+
+**CoreAnime** merupakan bagian dari inisiatif open-source (sumber terbuka) oleh **Core Dev Group**. Kami adalah kumpulan pengembang yang berfokus pada eksplorasi dan pengembangan teknologi web modern dengan performa tinggi dan desain inovatif.
+
+- Kunjungi situs web kami: [core-dev-group.my.id](https://core-dev-group.my.id)
+- Jelajahi proyek kami lainnya di GitHub: [github.com/core-dev-group](https://github.com/core-dev-group)
+
+---
+*Dibuat dengan 🔥 oleh Core Dev Group.*
