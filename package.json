@@ -6,8 +6,7 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc",
-    "postinstall": "prisma generate"
+    "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
     "@react-router/node": "^8",
@@ -31,7 +30,6 @@
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.5.4",
     "postcss": "^8.5.26",
-    "prisma": "^7.9.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vite": "^8.0.3"
