@@ -95,12 +95,11 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
         <div className="relative w-full aspect-video">
           <iframe 
             key={activeUrl}
-            src={activeUrl !== episode.defaultStreamingUrl ? `/api/proxy-stream?url=${encodeURIComponent(activeUrl)}` : activeUrl}
+            src={activeUrl}
             className="absolute inset-0 w-full h-full z-20"
             allowFullScreen
             frameBorder="0"
             scrolling="no"
-            sandbox="allow-scripts allow-same-origin"
           />
         </div>
         <div className="absolute inset-0 pointer-events-none crt-scanline opacity-10 z-30"></div>
