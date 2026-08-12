@@ -7,4 +7,9 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  server: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+    },
+  },
 });

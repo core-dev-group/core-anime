@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Anime {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  thumbnail     String?
+  synopsis      String?  @db.Text
+  status        String   // ongoing | completed | unknown
+  type          String   // tv | movie | ova | ona | special
+  malId         Int?
+  malScore      Float?
+  malSynopsis   String?  @db.Text
+  studios       String[] // Postgres array
+  genres        Genre[]  @relation("AnimeGenres")
+  episodes      Episode[]
+  sources       AnimeSource[]
+  rawData       Json?    // simpan raw response tiap provider buat debugging
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([malId])
+}
+
+model AnimeSource {
+  id            String   @id @default(cuid())
+  animeId       String
+  anime         Anime    @relation(fields: [animeId], references: [id])
+  provider      String   // "otakudesu" | "samehadaku" | dst
+  sourceSlug    String
+  lastCheckedAt DateTime @default(now())
+  isHealthy     Boolean  @default(true)
+
+  @@unique([provider, sourceSlug])
+  @@index([animeId])
+}
+
+model Episode {
+  id          String   @id @default(cuid())
+  animeId     String
+  anime       Anime    @relation(fields: [animeId], references: [id])
+  episodeNum  Int
+  title       String?
+  slug        String
+  streamUrls  Json     // array {server, quality, provider, url}
+  downloadUrls Json?
+  createdAt   DateTime @default(now())
+
+  @@index([animeId])
+}
+
+model Genre {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  slug   String  @unique
+  animes Anime[] @relation("AnimeGenres")
+}
+
+model ApiSourceHealth {
+  id            String   @id @default(cuid())
+  provider      String   @unique
+  isHealthy     Boolean  @default(true)
+  failCount     Int      @default(0)
+  lastFailAt    DateTime?
+  markedUnhealthyUntil DateTime?
+}
+
+// Opsional kalau ada fitur user (watchlist, history)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  watchlist Watchlist[]
+  history   WatchHistory[]
+  createdAt DateTime @default(now())
+}
+
+model Watchlist {
+  id      String @id @default(cuid())
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+  animeId String
+  addedAt DateTime @default(now())
+
+  @@unique([userId, animeId])
+}
+
+model WatchHistory {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  animeId      String
+  episodeId    String
+  watchedAt    DateTime @default(now())
+  progressSec  Int?     // buat fitur "lanjutkan nonton"
+}
