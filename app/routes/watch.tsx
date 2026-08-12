@@ -93,14 +93,33 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
       {/* Video Player Frame */}
       <div className="w-full bg-black relative border-2 border-surface-soft shadow-[4px_4px_0px_rgba(46,78,78,0.5)] md:shadow-[8px_8px_0px_rgba(46,78,78,0.5)] group overflow-hidden">
         <div className="relative w-full aspect-video">
-          <iframe 
-            key={activeUrl}
-            src={activeUrl}
-            className="absolute inset-0 w-full h-full z-20"
-            allowFullScreen
-            frameBorder="0"
-            scrolling="no"
-          />
+          {activeUrl.includes('desustream') || activeUrl.includes('odvidhide') ? (
+            <div className="absolute inset-0 w-full h-full z-20 bg-surface flex flex-col items-center justify-center gap-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-foreground/70 font-mono tracking-widest text-center text-sm px-4">
+                SERVER INI MEMBLOKIR PEMUTARAN LANGSUNG.<br/>SILAKAN TONTON DI JENDELA BARU.
+              </p>
+              <a 
+                href={activeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 px-6 py-2 bg-accent text-background font-mono font-bold uppercase tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_rgba(255,59,59,0.5)]"
+              >
+                BUKA VIDEO &raquo;
+              </a>
+            </div>
+          ) : (
+            <iframe 
+              key={activeUrl}
+              src={activeUrl}
+              className="absolute inset-0 w-full h-full z-20"
+              allowFullScreen
+              frameBorder="0"
+              scrolling="no"
+            />
+          )}
         </div>
         <div className="absolute inset-0 pointer-events-none crt-scanline opacity-10 z-30"></div>
         <div className="absolute top-0 right-0 bg-accent text-background px-3 py-1 z-30 border-b-2 border-l-2 border-surface shadow-[-2px_2px_0px_rgba(0,0,0,0.5)] font-mono text-xs font-bold uppercase tracking-widest pointer-events-none">
