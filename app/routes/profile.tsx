@@ -168,7 +168,7 @@ export default function ProfilePage() {
             {/* Avatar */}
             <div className="flex flex-col items-center gap-3">
               <div className="w-32 h-32 md:w-40 md:h-40 shrink-0 border-4 border-accent p-1 relative group bg-surface-soft">
-                <img src={profile.photoURL} alt={profile.displayName} className={`w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300 ${isUploadingPhoto ? 'opacity-30' : ''}`} />
+                <img src={profile.photoURL} alt={profile.displayName} className={`w-full h-full object-cover transition-all duration-300 ${isUploadingPhoto ? 'opacity-30' : ''}`} />
                 <div className="absolute inset-0 crt-scanline pointer-events-none opacity-50"></div>
                 {profile.isGuest && (
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-surface text-foreground text-[10px] font-mono font-bold px-2 py-0.5 border-2 border-surface-soft">

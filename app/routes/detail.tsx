@@ -64,7 +64,7 @@ export default function DetailPage({ loaderData }: Route.ComponentProps) {
             <img 
               src={detail.poster || detail.thumbnail || detail.image} 
               alt={detail.title}
-              className="w-full h-full object-cover mix-blend-luminosity grayscale group-hover:grayscale-0 transition-all duration-700"
+              className="w-full h-full object-cover transition-all duration-700"
             />
             <div className="absolute inset-0 pointer-events-none crt-scanline opacity-30"></div>
             

@@ -71,7 +71,7 @@ export function ReleaseSchedule({ items }: ReleaseScheduleProps) {
                 <img 
                   src={anime.thumbnail || anime.image || anime.poster} 
                   alt={anime.title}
-                  className="w-full h-full object-cover grayscale mix-blend-hard-light group-hover:grayscale-0 transition-all duration-300"
+                  className="w-full h-full object-cover transition-all duration-300"
                 />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 crt-scanline pointer-events-none"></div>
               </div>

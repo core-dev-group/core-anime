@@ -40,7 +40,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
           <img 
             src={anime.thumbnail || anime.image || anime.poster} 
             alt={anime.title}
-            className="w-full h-full object-cover object-top opacity-70 md:opacity-30 mix-blend-luminosity grayscale"
+            className="w-full h-full object-cover object-top opacity-70 md:opacity-30"
           />
           {/* Deep cinematic gradients */}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 md:via-background/80 to-background/10 md:to-transparent"></div>
@@ -117,7 +117,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
                 <img 
                   src={currentAnime.thumbnail || currentAnime.image || currentAnime.poster} 
                   alt={currentAnime.title}
-                  className="w-full h-full object-cover grayscale mix-blend-hard-light opacity-80"
+                  className="w-full h-full object-cover opacity-80"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>
                 <div className="absolute bottom-4 left-4 right-4 text-center">

@@ -24,7 +24,7 @@ export function AnimeCard({ anime, className = "" }: AnimeCardProps) {
         <img 
           src={anime.thumbnail || anime.image || anime.poster} 
           alt={anime.title} 
-          className="w-full h-full object-cover grayscale mix-blend-hard-light opacity-90 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+          className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500"
           loading="lazy"
         />
         

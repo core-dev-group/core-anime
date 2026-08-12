@@ -91,7 +91,7 @@ export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
                   <img 
                     src={anime.thumbnail || anime.image || anime.poster} 
                     alt={anime.title}
-                    className="w-full h-full object-cover grayscale mix-blend-hard-light group-hover:grayscale-0 transition-all duration-300"
+                    className="w-full h-full object-cover transition-all duration-300"
                   />
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 crt-scanline pointer-events-none"></div>
                   <div className="absolute top-0 left-0 bg-accent text-background text-[10px] font-mono font-bold px-1 border-b border-r border-accent">

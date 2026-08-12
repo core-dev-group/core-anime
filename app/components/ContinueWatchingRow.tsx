@@ -46,7 +46,7 @@ export function ContinueWatchingRow({ fallbackItems = [] }: ContinueWatchingProp
                   <img 
                     src={anime.thumbnail || anime.image || anime.poster} 
                     alt={anime.title}
-                    className="w-full h-full object-cover grayscale mix-blend-hard-light group-hover:grayscale-0 transition-all duration-500"
+                    className="w-full h-full object-cover transition-all duration-500"
                     loading="lazy"
                   />
                 ) : (
