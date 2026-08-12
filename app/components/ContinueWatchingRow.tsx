@@ -13,8 +13,8 @@ export function ContinueWatchingRow({ fallbackItems = [] }: ContinueWatchingProp
   // Mencegah hydration mismatch dengan tidak render sampai di-load di client
   if (!isLoaded) return null;
 
-  // Gunakan history asli, jika kosong gunakan fallbackItems untuk demo (optional)
-  const itemsToRender = history.length > 0 ? history : fallbackItems;
+  // Hanya gunakan history asli, jika kosong jangan tampilkan apa-apa
+  const itemsToRender = history;
 
   if (!itemsToRender || itemsToRender.length === 0) return null;
 
