@@ -3,9 +3,12 @@ import { Link, useNavigate } from "react-router";
 import { useAuth } from "~/hooks/useAuth";
 import { useWatchHistory } from "~/hooks/useWatchHistory";
 import { useState, useEffect } from "react";
+import { useCallback } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import { auth, db } from "~/lib/firebase.client";
+import Cropper from 'react-easy-crop';
+import getCroppedImg from '~/lib/cropImage';
 
 export function meta() {
   return [
@@ -24,6 +27,12 @@ export default function ProfilePage() {
   const [editName, setEditName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  
+  // Crop state
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   useEffect(() => {
     // If not loading and no profile, redirect to home
@@ -35,15 +44,35 @@ export default function ProfilePage() {
     }
   }, [profile, isLoading, navigate]);
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !profile || !auth.currentUser) return;
 
+    // Use FileReader to convert image to data URL for the cropper
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      setCropImageSrc(reader.result?.toString() || null);
+    });
+    reader.readAsDataURL(file);
+    e.target.value = ''; // reset input so we can upload the same file again if needed
+  };
+
+  const onCropComplete = useCallback((_croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleCropSubmit = async () => {
+    if (!cropImageSrc || !croppedAreaPixels || !profile || !auth.currentUser) return;
+
     setIsUploadingPhoto(true);
+    setCropImageSrc(null); // Close modal
 
     try {
+      const croppedBlob = await getCroppedImg(cropImageSrc, croppedAreaPixels);
+      if (!croppedBlob) throw new Error("Gagal memproses gambar crop.");
+
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", croppedBlob, "profile.jpg");
       // Menggunakan "core_anime" sebagai nama Preset Unsigned. User harus membuatnya di Settings Cloudinary.
       formData.append("upload_preset", "core_anime"); 
 
@@ -282,6 +311,48 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+        {/* Crop Modal */}
+        {cropImageSrc && (
+          <div className="fixed inset-0 z-[100] bg-background/90 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-surface border-2 border-accent p-4 md:p-6 w-full max-w-xl shadow-[8px_8px_0px_rgba(255,59,59,0.5)] flex flex-col">
+              <h3 className="text-xl font-display uppercase tracking-widest text-foreground mb-4">
+                Sesuaikan Foto Profil
+              </h3>
+              
+              <div className="relative w-full h-[300px] md:h-[400px] bg-black mb-6 shrink-0 border border-surface-soft">
+                <Cropper
+                  image={cropImageSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  cropShape="round"
+                  showGrid={false}
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                />
+              </div>
+              
+              <div className="flex gap-4 justify-end mt-auto">
+                <button 
+                  onClick={() => {
+                    setCropImageSrc(null);
+                    setZoom(1);
+                  }}
+                  className="px-6 py-2 bg-surface-soft text-foreground font-display uppercase tracking-widest text-sm hover:bg-surface-soft/80 transition-colors border border-transparent"
+                >
+                  BATAL
+                </button>
+                <button 
+                  onClick={handleCropSubmit}
+                  className="px-6 py-2 bg-accent text-white font-display uppercase tracking-widest text-sm hover:bg-accent/80 transition-colors border-2 border-accent"
+                >
+                  CROP & SIMPAN
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
