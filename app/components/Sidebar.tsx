@@ -33,6 +33,7 @@ export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
       if (!snap.empty) {
         const data = snap.docs.map((d, i) => ({
           name: d.data().displayName || "Unknown",
+          photoURL: d.data().photoURL || null,
           eps: d.data().totalEpisodesWatched || 0,
           rank: i + 1
         })).filter(u => u.eps > 0);
@@ -48,6 +49,7 @@ export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
       if (!snap.empty) {
         const data = snap.docs.map((d, i) => ({
           name: d.data().displayName || "Unknown",
+          photoURL: d.data().photoURL || null,
           hours: (d.data().totalWatchTimeSeconds / 3600).toFixed(1), // Convert seconds to hours
           rank: i + 1
         })).filter(u => parseFloat(u.hours) > 0);
@@ -157,10 +159,19 @@ export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
             topWatchers.map((user) => (
               <div key={user.name} className="flex items-center justify-between group">
                 <div className="flex items-center gap-3">
-                  <span className={`w-5 h-5 flex items-center justify-center font-bold ${user.rank === 1 ? 'bg-accent text-background border border-accent shadow-[0_0_5px_rgba(255,59,59,0.8)]' : user.rank <= 3 ? 'bg-surface-soft text-foreground' : 'text-foreground/50'}`}>
+                  <span className={`w-5 h-5 flex items-center justify-center font-bold shrink-0 ${user.rank === 1 ? 'bg-accent text-background border border-accent shadow-[0_0_5px_rgba(255,59,59,0.8)]' : user.rank <= 3 ? 'bg-surface-soft text-foreground' : 'text-foreground/50'}`}>
                     {user.rank}
                   </span>
-                  <span className={`font-bold tracking-wider ${user.rank <= 3 ? 'text-foreground' : 'text-foreground/70'} group-hover:text-accent transition-colors truncate max-w-[120px]`}>{user.name}</span>
+                  
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.name} className="w-6 h-6 rounded-full object-cover border border-surface-soft shrink-0" />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-surface-soft flex items-center justify-center text-[10px] font-bold text-foreground/50 shrink-0">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+
+                  <span className={`font-bold tracking-wider ${user.rank <= 3 ? 'text-foreground' : 'text-foreground/70'} group-hover:text-accent transition-colors truncate max-w-[90px] md:max-w-[100px]`}>{user.name}</span>
                 </div>
                 <span className="text-foreground/50">{user.eps} <span className="text-[9px]">ANIME</span></span>
               </div>
@@ -182,10 +193,19 @@ export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
             topHours.map((user) => (
               <div key={user.name} className="flex items-center justify-between group">
                 <div className="flex items-center gap-3">
-                  <span className={`w-5 h-5 flex items-center justify-center font-bold ${user.rank === 1 ? 'bg-accent text-background border border-accent shadow-[0_0_5px_rgba(255,59,59,0.8)]' : 'bg-surface-soft text-foreground'}`}>
+                  <span className={`w-5 h-5 flex items-center justify-center font-bold shrink-0 ${user.rank === 1 ? 'bg-accent text-background border border-accent shadow-[0_0_5px_rgba(255,59,59,0.8)]' : 'bg-surface-soft text-foreground'}`}>
                     {user.rank}
                   </span>
-                  <span className="font-bold tracking-wider text-foreground group-hover:text-accent transition-colors truncate max-w-[120px]">{user.name}</span>
+                  
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.name} className="w-6 h-6 rounded-full object-cover border border-surface-soft shrink-0" />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-surface-soft flex items-center justify-center text-[10px] font-bold text-foreground/50 shrink-0">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+
+                  <span className="font-bold tracking-wider text-foreground group-hover:text-accent transition-colors truncate max-w-[90px] md:max-w-[100px]">{user.name}</span>
                 </div>
                 <span className="text-foreground/50">{user.hours} <span className="text-[9px]">JAM</span></span>
               </div>
