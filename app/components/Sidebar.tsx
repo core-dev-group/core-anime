@@ -18,9 +18,9 @@ const GENRES = [
 export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
   // If we don't have dynamic donators yet, show an empty state or dummy fallback
   const displayDonators = topDonators.length > 0 ? topDonators : [
-    { name: "SULTAN_ANIME", amount_formatted: "Rp 5.000.000", message: "Maju terus webnya min!", tier: "DIAMOND" },
-    { name: "HIKIKOMORI_RICH", amount_formatted: "Rp 2.500.000", message: "Buat beli kopi server", tier: "PLATINUM" },
-    { name: "ANON_1928", amount_formatted: "Rp 1.000.000", message: "Semangat updatenya", tier: "GOLD" },
+    { name: "SULTAN_ANIME", amount_formatted: "Rp 5.000.000", message: "Maju terus webnya min!", tier: "DIAMOND", photoURL: "https://api.dicebear.com/9.x/pixel-art/svg?seed=SULTAN" },
+    { name: "HIKIKOMORI_RICH", amount_formatted: "Rp 2.500.000", message: "Buat beli kopi server", tier: "PLATINUM", photoURL: "https://api.dicebear.com/9.x/pixel-art/svg?seed=HIKI" },
+    { name: "ANON_1928", amount_formatted: "Rp 1.000.000", message: "Semangat updatenya", tier: "GOLD", photoURL: "https://api.dicebear.com/9.x/pixel-art/svg?seed=ANON" },
   ];
 
   const [topWatchers, setTopWatchers] = useState<any[]>([]);
@@ -236,9 +236,21 @@ export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
           {displayDonators.map((donator, idx) => (
             <div key={donator.name} className="flex flex-col border border-surface-soft p-3 bg-background group hover:border-accent transition-colors">
               <div className="flex justify-between items-center mb-2">
-                <span className="font-mono font-bold text-xs tracking-widest text-foreground group-hover:text-accent transition-colors">
-                  {idx + 1}. {donator.name}
-                </span>
+                <div className="flex items-center gap-2 shrink-0 max-w-[65%]">
+                  <span className="font-mono font-bold text-xs tracking-widest text-foreground group-hover:text-accent transition-colors">
+                    {idx + 1}.
+                  </span>
+                  {donator.photoURL ? (
+                    <img src={donator.photoURL} alt={donator.name} className="w-5 h-5 rounded-full object-cover border border-surface-soft shrink-0" />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-surface-soft flex items-center justify-center text-[8px] font-bold text-foreground/50 shrink-0">
+                      {donator.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="font-mono font-bold text-xs tracking-widest text-foreground group-hover:text-accent transition-colors truncate">
+                    {donator.name}
+                  </span>
+                </div>
                 <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 ${
                   donator.tier === 'DIAMOND' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500' :
                   donator.tier === 'PLATINUM' ? 'bg-purple-500/20 text-purple-400 border border-purple-500' :
