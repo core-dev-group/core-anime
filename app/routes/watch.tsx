@@ -93,7 +93,7 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
       {/* Video Player Frame */}
       <div className="w-full bg-black relative border-2 border-surface-soft shadow-[4px_4px_0px_rgba(46,78,78,0.5)] md:shadow-[8px_8px_0px_rgba(46,78,78,0.5)] group overflow-hidden">
         <div className="relative w-full aspect-video">
-          {activeUrl.includes('desustream') || activeUrl.includes('odvidhide') ? (
+          {activeUrl.includes('desustream') || activeUrl.includes('ondesu') ? (
             <div className="absolute inset-0 w-full h-full z-20 bg-surface flex flex-col items-center justify-center gap-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
