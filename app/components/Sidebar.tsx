@@ -124,15 +124,18 @@ export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
         </div>
         
         <div className="flex flex-wrap gap-2 pt-4">
-          {GENRES.map((genre) => (
-            <Link 
-              key={genre}
-              to={`/genres`}
-              className="text-[10px] font-mono font-bold uppercase text-foreground/70 bg-surface-soft/20 hover:bg-accent hover:text-background px-3 py-1.5 transition-colors border-2 border-surface-soft hover:border-accent"
-            >
-              {genre}
-            </Link>
-          ))}
+          {GENRES.map((genre) => {
+            const genreSlug = genre.toLowerCase().replace(/ /g, '-');
+            return (
+              <Link 
+                key={genre}
+                to={`/genre/${genreSlug}`}
+                className="text-[10px] font-mono font-bold uppercase text-foreground/70 bg-surface-soft/20 hover:bg-accent hover:text-background px-3 py-1.5 transition-colors border-2 border-surface-soft hover:border-accent"
+              >
+                {genre}
+              </Link>
+            );
+          })}
         </div>
       </div>
 
