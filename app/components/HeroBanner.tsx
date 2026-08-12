@@ -29,7 +29,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const getImageUrl = (anime: any) => anime.thumbnail || anime.image || anime.poster || "https://placehold.co/800x1200/111111/ff3b3b?text=CORE+ANIME&font=mono";
 
   return (
-    <div className="relative w-full h-[75vh] md:h-[85vh] mt-16 md:mt-20 mb-10 overflow-hidden group rounded-b-sm border-b border-surface-soft shadow-xl">
+    <div className="relative w-full h-[75vh] md:h-[85vh] mt-0 mb-10 overflow-hidden group rounded-b-sm border-b border-surface-soft shadow-xl">
       {/* Background Images with Crossfade */}
       {items.map((anime, index) => (
         <div 

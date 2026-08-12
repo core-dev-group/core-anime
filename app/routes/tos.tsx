@@ -32,7 +32,7 @@ export default function TosPage() {
   ];
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-8 min-h-screen mt-16 md:mt-20 text-foreground">
+    <div className="container mx-auto px-4 md:px-6 py-8 min-h-screen text-foreground">
       <div className="max-w-4xl mx-auto">
         
         {/* Header Section */}

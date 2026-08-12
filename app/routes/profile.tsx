@@ -133,7 +133,7 @@ export default function ProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-8 min-h-screen mt-16 md:mt-20">
+    <div className="container mx-auto px-4 md:px-6 py-8 min-h-screen">
       <div className="max-w-2xl mx-auto">
         
         {/* Header */}

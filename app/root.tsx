@@ -87,7 +87,7 @@ export default function App() {
         </div>
       )}
       <Navbar />
-      <main className="flex-grow pt-24 pb-8">
+      <main className="flex-grow pt-6 pb-8">
         <Outlet />
       </main>
       <Footer />

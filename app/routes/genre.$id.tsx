@@ -36,7 +36,7 @@ export default function GenreDetailPage({ loaderData }: Route.ComponentProps) {
   const genreName = genreId.replace(/-/g, ' ').toUpperCase();
 
   return (
-    <div className="container mx-auto px-4 md:px-6 py-8 mt-16 md:mt-20">
+    <div className="container mx-auto px-4 md:px-6 py-8">
       {/* Header */}
       <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-2 border-surface-soft pb-4 animate-fade-in-up">
         <div>

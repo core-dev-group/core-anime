@@ -18,5 +18,7 @@ export default [
   route("privacy", "routes/privacy.tsx"),
   route("api/saweria", "routes/api.saweria.ts"),
   route("/api/proxy-stream", "routes/api.proxy-stream.ts"),
+  route("api/yt-search", "routes/api.yt-search.ts"),
+  route("api/server", "routes/api.server.ts"),
   route("admin/providers", "routes/admin.providers.tsx")
 ] satisfies RouteConfig;

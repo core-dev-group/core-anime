@@ -25,7 +25,7 @@ export default function GenresPage({ loaderData }: Route.ComponentProps) {
   return (
     <div className="container mx-auto px-4 md:px-6 py-8 min-h-screen">
       {/* Header */}
-      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-2 border-surface-soft pb-4 animate-fade-in-up mt-16 md:mt-20">
+      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-2 border-surface-soft pb-4 animate-fade-in-up">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Link to="/home" className="inline-block bg-surface text-foreground/70 hover:text-accent hover:border-accent transition-colors px-3 py-1 font-bold tracking-widest text-sm border-2 border-surface-soft">

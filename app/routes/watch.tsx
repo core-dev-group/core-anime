@@ -65,20 +65,23 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
     );
   }
 
-  // Format qualities for buttons
-  const streamQualities: { url: string, server: string, quality: string }[] = [];
+  // Format qualities for buttons (Grouped by resolution)
+  const groupedServers: Record<string, { url: string, server: string }[]> = {};
+  
   if (episode.defaultStreamingUrl) {
-    streamQualities.push({ url: episode.defaultStreamingUrl, server: 'Default', quality: 'Auto' });
+    groupedServers['Auto'] = [{ url: episode.defaultStreamingUrl, server: 'Default' }];
   }
   
   if (episode.server?.qualities) {
     episode.server.qualities.forEach((q: any) => {
+      const qualityTitle = q.title || 'Unknown';
+      if (!groupedServers[qualityTitle]) groupedServers[qualityTitle] = [];
+      
       if (q.serverList) {
         q.serverList.forEach((s: any) => {
-          streamQualities.push({
-            url: s.serverId, // Sanka uses serverId which needs another endpoint to get the iframe.
-            server: s.title,
-            quality: q.title
+          groupedServers[qualityTitle].push({
+            url: s.serverId,
+            server: s.title
           });
         });
       }
@@ -88,11 +91,8 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
   return (
     <div className="flex flex-col gap-8 animate-fade-in-up animation-delay-100">
       {/* Video Player Frame */}
-      <div className="w-full bg-black relative border-2 border-surface-soft shadow-[8px_8px_0px_rgba(46,78,78,0.5)] group overflow-hidden flex justify-center items-center">
-        <div 
-          className="relative w-full aspect-video"
-          style={{ maxHeight: '65vh', maxWidth: 'calc(65vh * 16 / 9)' }}
-        >
+      <div className="w-full bg-black relative border-2 border-surface-soft shadow-[4px_4px_0px_rgba(46,78,78,0.5)] md:shadow-[8px_8px_0px_rgba(46,78,78,0.5)] group overflow-hidden">
+        <div className="relative w-full aspect-video">
           <iframe 
             src={activeUrl.includes('desustream') ? `/api/proxy-stream?url=${encodeURIComponent(activeUrl)}` : activeUrl}
             className="absolute inset-0 w-full h-full z-20"
@@ -102,7 +102,7 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
           />
         </div>
         <div className="absolute inset-0 pointer-events-none crt-scanline opacity-10 z-30"></div>
-        <div className="absolute top-0 right-0 bg-accent text-background px-3 py-1 z-30 border-b-2 border-l-2 border-surface shadow-[-2px_2px_0px_rgba(0,0,0,0.5)] font-mono text-xs font-bold uppercase tracking-widest">
+        <div className="absolute top-0 right-0 bg-accent text-background px-3 py-1 z-30 border-b-2 border-l-2 border-surface shadow-[-2px_2px_0px_rgba(0,0,0,0.5)] font-mono text-xs font-bold uppercase tracking-widest pointer-events-none">
           LIVE FEED
         </div>
       </div>
@@ -114,35 +114,46 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
             PILIH SERVER
           </h3>
         </div>
-        <div className="flex flex-wrap gap-3 mt-2">
-          {streamQualities.map((stream, idx) => (
-            <button
-              key={idx}
-              onClick={async () => {
-                setActiveServerId(stream.url); // Use stream.url (which is serverId or 'Default') as the unique identifier
-                if (stream.server === 'Default') {
-                  setActiveUrl(stream.url);
-                } else {
-                  try {
-                    const res = await sankaApi.getServerUrl(stream.url);
-                    if (res?.url) {
-                      setActiveUrl(res.url);
-                    } else {
-                      alert('Gagal mengambil tautan server pihak ketiga.');
-                    }
-                  } catch (e) {
-                    alert('Gagal menghubungi server penyedia.');
-                  }
-                }
-              }}
-              className={`px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest transition-all border-2 ${
-                activeServerId === stream.url
-                  ? "bg-accent text-white border-accent shadow-[4px_4px_0px_rgba(255,59,59,0.5)]" 
-                  : "bg-background text-foreground/70 hover:text-foreground hover:border-accent border-surface-soft shadow-[2px_2px_0px_rgba(46,78,78,0.5)] hover:-translate-y-0.5"
-              }`}
-            >
-              {stream.server} <span className="opacity-70 ml-1">({stream.quality})</span>
-            </button>
+        <div className="flex flex-col gap-4 mt-4">
+          {Object.entries(groupedServers)
+            .filter(([_, servers]) => servers.length > 0)
+            .map(([quality, servers]) => (
+            <div key={quality} className="flex flex-col sm:flex-row sm:items-center gap-4 pb-4 border-b border-surface-soft last:border-0 last:pb-0">
+              <span className="font-mono font-bold text-accent text-sm uppercase tracking-widest w-20 shrink-0 border-l-2 border-accent pl-2">
+                {quality}
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {servers.map((stream, idx) => (
+                  <button
+                    key={idx}
+                    onClick={async () => {
+                      setActiveServerId(stream.url); // Use stream.url (which is serverId or 'Default') as the unique identifier
+                      if (stream.server === 'Default') {
+                        setActiveUrl(stream.url);
+                      } else {
+                        try {
+                          const res = await fetch(`/api/server?id=${encodeURIComponent(stream.url)}`).then(r => r.json());
+                          if (res?.url) {
+                            setActiveUrl(res.url);
+                          } else {
+                            alert('Gagal mengambil tautan server pihak ketiga.');
+                          }
+                        } catch (e) {
+                          alert('Gagal menghubungi server penyedia.');
+                        }
+                      }
+                    }}
+                    className={`px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-widest transition-all border ${
+                      activeServerId === stream.url
+                        ? "bg-accent text-white border-accent shadow-[3px_3px_0px_rgba(255,59,59,0.5)]" 
+                        : "bg-background text-foreground/70 hover:text-foreground hover:border-accent border-surface-soft shadow-[2px_2px_0px_rgba(46,78,78,0.5)] hover:-translate-y-0.5"
+                    }`}
+                  >
+                    {stream.server}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -156,7 +167,7 @@ export default function WatchPage({ loaderData }: Route.ComponentProps) {
   const location = useLocation();
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl mt-16 md:mt-20">
+    <div className="container mx-auto px-4 py-8 max-w-6xl mt-4 md:mt-6">
       
       {/* Top Bar with Back Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 border-b-2 border-surface-soft pb-4 gap-4">
