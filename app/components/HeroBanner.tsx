@@ -77,7 +77,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
                 )}
               </div>
               
-              <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-display text-foreground mb-4 md:mb-6 leading-tight md:leading-none tracking-normal uppercase drop-shadow-xl line-clamp-4 md:line-clamp-2 animate-fade-in-up animation-delay-100">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display text-foreground mb-4 md:mb-6 leading-tight md:leading-none tracking-normal uppercase drop-shadow-xl line-clamp-4 md:line-clamp-3 animate-fade-in-up animation-delay-100">
                 {currentAnime.title}
               </h1>
               
