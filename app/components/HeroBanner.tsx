@@ -26,6 +26,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const currentAnime = items[currentIndex];
   const linkId = currentAnime.slug || currentAnime.sourceSlug || currentAnime.id;
   const displayScore = currentAnime.score && currentAnime.score !== "unknown" ? Number(currentAnime.score).toFixed(1) : null;
+  const getImageUrl = (anime: any) => anime.thumbnail || anime.image || anime.poster || "https://placehold.co/800x1200/111111/ff3b3b?text=CORE+ANIME&font=mono";
 
   return (
     <div className="relative w-full h-[75vh] md:h-[85vh] mt-16 md:mt-20 mb-10 overflow-hidden group rounded-b-sm border-b border-surface-soft shadow-xl">
@@ -38,7 +39,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
           }`}
         >
           <img 
-            src={anime.thumbnail || anime.image || anime.poster} 
+            src={getImageUrl(anime)} 
             alt={anime.title}
             className="w-full h-full object-cover object-top opacity-70 md:opacity-30"
           />
@@ -115,7 +116,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
             <div className="hidden lg:block w-[300px] shrink-0 animate-fade-in-up animation-delay-200" key={`poster-${currentIndex}`}>
               <div className="relative aspect-[3/4] rounded-sm overflow-hidden shadow-[10px_10px_0px_rgba(46,78,78,0.5)] border-2 border-surface-soft transition-colors duration-500">
                 <img 
-                  src={currentAnime.thumbnail || currentAnime.image || currentAnime.poster} 
+                  src={getImageUrl(currentAnime)} 
                   alt={currentAnime.title}
                   className="w-full h-full object-cover opacity-80"
                 />
