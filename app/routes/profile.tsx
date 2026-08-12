@@ -226,14 +226,10 @@ export default function ProfilePage() {
               </p>
 
               {/* Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="border border-surface-soft p-3 bg-surface-soft/20 flex flex-col justify-center">
                   <p className="font-mono text-[10px] text-foreground/70 uppercase tracking-widest mb-1">Judul Anime</p>
                   <p className="font-display text-2xl text-foreground">{historyLoaded ? history.length : '-'}</p>
-                </div>
-                <div className="border border-surface-soft p-3 bg-surface-soft/20 flex flex-col justify-center">
-                  <p className="font-mono text-[10px] text-foreground/70 uppercase tracking-widest mb-1">Total Episode</p>
-                  <p className="font-display text-2xl text-foreground">{profile.totalEpisodesWatched}</p>
                 </div>
                 <div className="border border-surface-soft p-3 bg-surface-soft/20 flex flex-col justify-center">
                   <p className="font-mono text-[10px] text-foreground/70 uppercase tracking-widest mb-1">Total Waktu</p>
