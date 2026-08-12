@@ -52,6 +52,29 @@ export function useBookmarks() {
       console.error("Failed to parse bookmarks", e);
     }
     setIsLoaded(true);
+
+    const handleBookmarksUpdate = () => {
+      try {
+        const stored = localStorage.getItem(BOOKMARKS_KEY);
+        if (stored) {
+          setBookmarks(JSON.parse(stored));
+        } else {
+          setBookmarks([]);
+        }
+      } catch (e) {
+        console.error("Failed to sync bookmarks from storage", e);
+      }
+    };
+
+    window.addEventListener('bookmarks-updated', handleBookmarksUpdate);
+    window.addEventListener('storage', (e) => {
+      if (e.key === BOOKMARKS_KEY) handleBookmarksUpdate();
+    });
+
+    return () => {
+      window.removeEventListener('bookmarks-updated', handleBookmarksUpdate);
+      window.removeEventListener('storage', handleBookmarksUpdate);
+    };
   }, [profile]); // Re-run when profile changes (login/logout)
 
   const toggleBookmark = async (anime: UnifiedAnime) => {
@@ -70,6 +93,7 @@ export function useBookmarks() {
       
       try {
         localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(newBookmarks));
+        window.dispatchEvent(new Event('bookmarks-updated'));
       } catch (e) {
         console.error("Failed to save bookmark locally", e);
       }
