@@ -37,6 +37,7 @@ export function meta({}: Route.MetaArgs) {
     { property: "og:title", content: "CoreAnime - Nonton Anime Gratis Cepat" },
     { property: "og:description", content: "Platform streaming anime gratis, cepat, dan ringan dengan subtitle Indonesia. Project by Core Dev Group." },
     { property: "og:type", content: "website" },
+    { property: "og:url", content: "https://core-anime.my.id" },
     { property: "og:site_name", content: "CoreAnime" },
   ];
 }

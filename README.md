@@ -5,6 +5,9 @@
   <p>Dibangun menggunakan React Router v7 (Remix) dengan tema desain <i>Retro / CRT / Broadcast</i> yang unik dan premium.</p>
   <br />
   <p>
+    <strong>🔗 Live Demo: <a href="https://core-anime.my.id">core-anime.my.id</a></strong>
+  </p>
+  <p>
     Sebuah proyek persembahan dari <strong><a href="https://core-dev-group.my.id">Core Dev Group</a></strong>
   </p>
   <p>
