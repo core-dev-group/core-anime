@@ -100,6 +100,7 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
             allowFullScreen
             frameBorder="0"
             scrolling="no"
+            sandbox="allow-scripts allow-same-origin"
           />
         </div>
         <div className="absolute inset-0 pointer-events-none crt-scanline opacity-10 z-30"></div>
