@@ -1,8 +1,8 @@
-# CoreAnime 📺 - Nonton Anime Gratis Cepat
+# CoreAnime Database 📺
 
 <div align="center">
-  <h3>Streaming & Download Anime Subtitle Indonesia dengan Cepat dan Ringan</h3>
-  <p>Dibangun menggunakan React Router v7 (Remix) dengan tema desain <i>Retro / CRT / Broadcast</i> yang unik dan premium.</p>
+  <h3>Portal Informasi, Indeks Episode, dan Database Anime Subtitle Indonesia Terlengkap</h3>
+  <p>Dibangun menggunakan <strong>React Router v7</strong> dengan tema desain <i>Retro / CRT / Broadcast</i> yang estetik dan premium.</p>
   <br />
   <p>
     <strong>🔗 Live Demo: <a href="https://core-anime.my.id">core-anime.my.id</a></strong>
@@ -10,31 +10,37 @@
   <p>
     Sebuah proyek persembahan dari <strong><a href="https://core-dev-group.my.id">Core Dev Group</a></strong>
   </p>
-  <p>
-    <a href="https://github.com/core-dev-group">GitHub Core Dev Group</a> &bull; <a href="https://core-dev-group.my.id">Website Resmi</a>
-  </p>
 </div>
 
 ---
 
 ## 🚀 Fitur Utama
 
-- ⚡ **Nonton Anime Gratis Cepat**: Dibangun dengan teknologi React Router v7 (Remix) yang mendukung Server-Side Rendering (SSR) untuk performa memuat halaman (*loading*) yang instan.
-- 🎨 **Desain Unik Bergaya Retro**: Mengusung tema *Broadcast Retro* yang kental dengan estetika gelap, merah *(crimson red)*, animasi *scanline* CRT, dan UI yang menyerupai komputer atau mesin *arcade* klasik.
-- 📱 **Responsif & Ramah Pengguna**: Tampilan menyesuaikan semua jenis perangkat, baik HP, Tablet, maupun PC.
-- 💾 **Fitur Download Lengkap**: Mendukung unduhan video per episode hingga format *Full Batch* (seluruh episode sekaligus) dalam berbagai kualitas (360p, 480p, 720p, 1080p).
-- 🕒 **Pelacak Tontonan Pintar**: Menyimpan riwayat terakhir ditonton (*Continue Watching*) di perangkat pengguna sehingga tidak perlu khawatir lupa episode berapa.
-- 🏆 **Leaderboard Interaktif**: Sistem papan peringkat penonton teraktif yang divalidasi langsung melalui *Firebase Firestore*.
+- ⚡ **Performa Kilat (SSR & CSR)**: Dibangun dengan teknologi web terbaru **React Router v7** (sebelumnya Remix) yang mendukung Server-Side Rendering untuk *loading* instan dan navigasi super cepat.
+- 🎨 **Desain Retro yang Ikonik**: Mengusung UI/UX bertema *Broadcast Retro*, lengkap dengan estetika gelap, elemen merah *(crimson red)*, animasi *scanline* CRT, dan gaya ala monitor komputer klasik yang *sleek*.
+- 🗂️ **Database Lengkap & Integrasi API Eksternal**:
+  - **Jikan API (MyAnimeList)**: Mengambil data karakter, *voice actor* (Seiyuu), skor, dan statistik mendalam.
+  - **AniList API**: Menampilkan *banner* kualitas tinggi dan *trailer* video resmi.
+  - **Sanka API**: Sebagai agregator data indeks episode dan metadata tayangan (*scraper* pintar).
+- 🔐 **Sistem Autentikasi (Google Login)**: Sinkronisasi akun yang mulus menggunakan Firebase Auth.
+- 🕒 **Pelacak Riwayat (Watch Tracker)**: Sistem akan otomatis menyimpan episode terakhir yang Anda tonton secara *real-time* ke *database*, sehingga riwayat tontonan tidak akan hilang walau berganti perangkat.
+- 🔖 **Bookmark System**: Simpan anime favorit Anda ke dalam daftar khusus.
+- 🏆 **Leaderboard Interaktif**: Papan peringkat otomatis (Berdasarkan jumlah episode dan durasi menonton) untuk anggota komunitas yang paling aktif.
+- 🛡️ **Penanganan CSP (Content Security Policy) Dinamis**: Mampu mengelola dan menghindari isu pemblokiran *iframe* (CSP) dari berbagai server pihak ketiga secara elegan dengan memberikan jalur alternatif bagi pengguna.
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Arsitektur
 
-- **Framework**: [React Router v7](https://reactrouter.com/) (sebelumnya dikenal sebagai Remix)
+Proyek ini dibangun di atas fondasi teknologi modern tingkat produksi:
+
+- **Frontend & Framework**: [React Router v7](https://reactrouter.com/) (berbasis Vite)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Backend/API**: Sanka Anime API (Scraper Otakudesu)
-- **Database/Auth**: [Firebase Firestore](https://firebase.google.com/)
-- **Deployment**: Sangat dioptimalkan untuk [Vercel](https://vercel.com/) (menggunakan `@vercel/react-router`)
+- **Database (Relasional)**: [Prisma ORM](https://www.prisma.io/) terhubung ke PostgreSQL (Supabase)
+- **Database & Auth (Real-time)**: [Firebase Firestore & Firebase Auth](https://firebase.google.com/)
+- **Deployment**: [Vercel](https://vercel.com/) (Serverless Edge Functions)
 
-## 📦 Cara Menjalankan di Komputer Sendiri
+## 📦 Panduan Instalasi Lokal
+
+Ingin menjalankan proyek ini di komputer Anda sendiri? Ikuti langkah-langkah berikut:
 
 1. **Clone repository ini**
    ```bash
@@ -47,23 +53,37 @@
    npm install
    ```
 
-3. **Jalankan server pengembangan**
+3. **Konfigurasi Environment Variables**
+   Buat file `.env` di *root directory* dan masukkan konfigurasi *database* Prisma Anda:
+   ```env
+   DATABASE_URL="postgresql://user:password@host:port/dbname?schema=public"
+   ```
+
+4. **Konfigurasi Firebase**
+   Pastikan Anda memasukkan *credentials* Firebase Client Anda di dalam file `app/lib/firebase.client.ts`.
+
+5. **Generate Prisma Client**
+   ```bash
+   npx prisma generate
+   ```
+
+6. **Jalankan server pengembangan (Development)**
    ```bash
    npm run dev
    ```
 
-4. Buka `http://localhost:5173` di browser Anda!
+7. Buka `http://localhost:5173` di browser Anda!
 
-## 🤖 SEO & Metadata
+## 🤖 Praktik SEO & Keamanan
 
-Aplikasi ini sudah diprogram agar ramah mesin pencari (SEO-friendly). Setiap halaman dan episode secara dinamis mengatur *meta tags*, *title*, dan deskripsi untuk menargetkan kata kunci **"nonton anime gratis cepat"**, **"download anime batch"**, dan **"streaming anime sub indo"**.
+Aplikasi ini telah mematuhi standar SEO terbaru dan didesain untuk menghindari *flagging* otomatis (sebagai situs bajakan) oleh mesin pencari AI. Penggunaan *metadata* difokuskan pada kata kunci "Database Anime", "Komunitas", dan "Indeks Episode" untuk memastikan reputasi situs tetap aman dan diindeks secara positif oleh Google. Aplikasi ini juga telah dilengkapi dengan halaman perlindungan hukum seperti **Privacy Policy** dan **DMCA**.
 
 ## 👥 Tentang Core Dev Group
 
-**CoreAnime** merupakan bagian dari inisiatif open-source (sumber terbuka) oleh **Core Dev Group**. Kami adalah kumpulan pengembang yang berfokus pada eksplorasi dan pengembangan teknologi web modern dengan performa tinggi dan desain inovatif.
+**CoreAnime** merupakan bagian dari inisiatif eksplorasi sumber terbuka (open-source) oleh **Core Dev Group**. Kami adalah kumpulan pengembang yang berfokus pada eksplorasi dan pengembangan teknologi web modern dengan performa tinggi dan desain inovatif.
 
-- Kunjungi situs web kami: [core-dev-group.my.id](https://core-dev-group.my.id)
-- Jelajahi proyek kami lainnya di GitHub: [github.com/core-dev-group](https://github.com/core-dev-group)
+- 🌐 Kunjungi situs web kami: [core-dev-group.my.id](https://core-dev-group.my.id)
+- 💻 Jelajahi proyek kami lainnya di GitHub: [github.com/core-dev-group](https://github.com/core-dev-group)
 
 ---
-*Dibuat dengan 🔥 oleh Core Dev Group.*
+*Dibangun dengan dedikasi penuh 🔥 oleh Core Dev Group.*
