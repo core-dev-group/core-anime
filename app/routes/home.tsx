@@ -30,12 +30,12 @@ export async function loader() {
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "CoreAnime - Nonton Anime Gratis Cepat & Terlengkap" },
-    { name: "description", content: "Platform streaming dan download anime gratis, cepat, dan ringan dengan subtitle Indonesia. Bagian dari project Core Dev Group." },
-    { name: "keywords", content: "nonton anime gratis, nonton anime cepat, streaming anime sub indo, download anime, anime retro, core anime, core dev group" },
+    { title: "CoreAnime - Database & Komunitas Anime Terlengkap Sub Indo" },
+    { name: "description", content: "Portal informasi, indeks episode, dan komunitas anime subtitle Indonesia terlengkap. Dibangun dengan cinta oleh Core Dev Group." },
+    { name: "keywords", content: "database anime, info anime, komunitas anime sub indo, jadwal rilis anime, indeks anime, core anime, core dev group" },
     { name: "author", content: "Core Dev Group" },
-    { property: "og:title", content: "CoreAnime - Nonton Anime Gratis Cepat" },
-    { property: "og:description", content: "Platform streaming anime gratis, cepat, dan ringan dengan subtitle Indonesia. Project by Core Dev Group." },
+    { property: "og:title", content: "CoreAnime - Database & Komunitas Anime Sub Indo" },
+    { property: "og:description", content: "Portal informasi dan jadwal rilis anime subtitle Indonesia terlengkap. Project by Core Dev Group." },
     { property: "og:type", content: "website" },
     { property: "og:url", content: "https://core-anime.my.id" },
     { property: "og:site_name", content: "CoreAnime" },

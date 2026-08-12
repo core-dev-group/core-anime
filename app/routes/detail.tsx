@@ -91,11 +91,12 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export function meta({ data }: { data: any }) {
-  const title = data?.detail?.title ? `${data.detail.title} - Core Anime` : "Anime Detail";
-  const desc = data?.detail?.synopsis?.paragraphs?.[0] || "Watch anime online";
+  const title = data?.detail?.title ? `${data.detail.title} - Core Anime Database` : "Anime Detail - Core Anime Database";
+  const desc = data?.detail?.synopsis?.paragraphs?.[0] || "Informasi detail, jadwal rilis, dan indeks episode anime terlengkap.";
   return [
     { title },
-    { name: "description", content: desc }
+    { name: "description", content: desc },
+    { name: "keywords", content: `${data?.detail?.title || "anime"}, informasi anime, database anime, sinopsis anime, komunitas anime, jadwal rilis` }
   ];
 }
 

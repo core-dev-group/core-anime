@@ -27,7 +27,8 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 export function meta({ data }: { data: any }) {
   return [
-    { title: data ? `Watch ${data.episode.title || 'Episode'}` : "Watch Anime" },
+    { title: data ? `Indeks Episode ${data.episode.title || ''} - Core Anime Database` : "Indeks Episode - Core Anime Database" },
+    { name: "description", content: "Laman indeks episode dan database komunitas Core Anime." }
   ];
 }
 
