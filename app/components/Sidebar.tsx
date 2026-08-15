@@ -16,12 +16,7 @@ const GENRES = [
 ];
 
 export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
-  // If we don't have dynamic donators yet, show an empty state or dummy fallback
-  const displayDonators = topDonators.length > 0 ? topDonators : [
-    { name: "SULTAN_ANIME", amount_formatted: "Rp 5.000.000", message: "Maju terus webnya min!", tier: "DIAMOND", photoURL: "https://api.dicebear.com/9.x/pixel-art/svg?seed=SULTAN" },
-    { name: "HIKIKOMORI_RICH", amount_formatted: "Rp 2.500.000", message: "Buat beli kopi server", tier: "PLATINUM", photoURL: "https://api.dicebear.com/9.x/pixel-art/svg?seed=HIKI" },
-    { name: "ANON_1928", amount_formatted: "Rp 1.000.000", message: "Semangat updatenya", tier: "GOLD", photoURL: "https://api.dicebear.com/9.x/pixel-art/svg?seed=ANON" },
-  ];
+  const displayDonators = topDonators;
 
   const [topWatchers, setTopWatchers] = useState<any[]>([]);
   const [topHours, setTopHours] = useState<any[]>([]);
