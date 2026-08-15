@@ -77,6 +77,73 @@ export interface MalCharacter {
   }[];
 }
 
+async function fetchJikanCharacters(malId: number): Promise<MalCharacter[]> {
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime/${malId}/characters`, {
+      headers: { "User-Agent": "CoreAnime/7.0 (contact@coreanime.my.id)" }
+    });
+    if (res.ok) {
+      const json = await res.json();
+      return (json.data || []).map((item: any) => ({
+        character: {
+          mal_id: item.character?.mal_id,
+          url: item.character?.url || "",
+          images: { jpg: { image_url: item.character?.images?.jpg?.image_url || "" } },
+          name: item.character?.name || ""
+        },
+        role: item.role || "Main",
+        voice_actors: (item.voice_actors || []).map((va: any) => ({
+          person: {
+            mal_id: va.person?.mal_id,
+            url: va.person?.url || "",
+            images: { jpg: { image_url: va.person?.images?.jpg?.image_url || "" } },
+            name: va.person?.name || ""
+          },
+          language: va.language || "Japanese"
+        }))
+      }));
+    }
+  } catch (e) {
+    console.warn("Jikan characters fetch error:", e);
+  }
+  return [];
+}
+
+async function fetchYouTubeTrailer(title: string): Promise<{ youtube_id: string; url: string; embed_url: string }> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) {
+    console.warn("YOUTUBE_API_KEY not set, skipping trailer fetch");
+    return { youtube_id: "", url: "", embed_url: "" };
+  }
+
+  try {
+    const q = `${title} official trailer pv anime`;
+    const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
+    searchUrl.searchParams.set("part", "id");
+    searchUrl.searchParams.set("q", q);
+    searchUrl.searchParams.set("type", "video");
+    searchUrl.searchParams.set("maxResults", "1");
+    searchUrl.searchParams.set("key", apiKey);
+
+    const res = await fetch(searchUrl.toString());
+    if (res.ok) {
+      const data = await res.json();
+      const videoId = data?.items?.[0]?.id?.videoId;
+      if (videoId) {
+        return {
+          youtube_id: videoId,
+          url: `https://www.youtube.com/watch?v=${videoId}`,
+          embed_url: `https://www.youtube-nocookie.com/embed/${videoId}`
+        };
+      }
+    }
+  } catch (e) {
+    console.warn("YouTube trailer search error:", e);
+  }
+  return { youtube_id: "", url: "", embed_url: "" };
+}
+
+
 async function fetchAnilistData(malId: number): Promise<{ trailer: any, characters: MalCharacter[] } | null> {
   const query = `
   query ($idMal: Int) {
@@ -320,16 +387,29 @@ export async function getCompleteAnimeDetail(sankaTitle: string) {
     return null;
   }
 
+  // Try AniList first, then fallback to Jikan & YouTube if AniList is down
   const anilistData = await fetchAnilistData(malId);
 
   let mainCharacters: MalCharacter[] = [];
 
-  if (anilistData) {
+  if (anilistData && anilistData.characters.length > 0) {
     if (anilistData.trailer.youtube_id) {
       malInfo.trailer = anilistData.trailer;
     }
-    // Filter to main/supporting just in case
     mainCharacters = anilistData.characters.filter(c => c.role === "Main" || c.role === "Supporting").slice(0, 10);
+  } else {
+    // Fallback: Fetch characters from Jikan
+    const jikanChars = await fetchJikanCharacters(malId);
+    if (jikanChars.length > 0) {
+      mainCharacters = jikanChars.slice(0, 12);
+    }
+    // Fallback: Fetch trailer from YouTube
+    if (!malInfo.trailer?.embed_url) {
+      const ytTrailer = await fetchYouTubeTrailer(malInfo.title);
+      if (ytTrailer.embed_url) {
+        malInfo.trailer = ytTrailer;
+      }
+    }
   }
 
   const result = {
@@ -337,8 +417,8 @@ export async function getCompleteAnimeDetail(sankaTitle: string) {
     characters: mainCharacters
   };
 
-  // Cache for 2 hours (Since AniList is stable, we don't expect random 504s. If no characters, it just means they don't exist yet)
+  // Cache for 2 hours
   setMemoryCache(cacheKey, result, 120);
-  
+
   return result;
 }
