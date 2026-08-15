@@ -16,8 +16,8 @@ export async function loader() {
     sankaApi.getOngoing()
   ]);
 
-  // Load real-time top donators from local JSON database
-  const topDonators = getTopDonators(3);
+  // Load real-time top donators from Firestore
+  const topDonators = await getTopDonators(3);
 
   return { 
     homeData, 

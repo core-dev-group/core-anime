@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
   };
 
   try {
-    saveDonation(donation);
+    await saveDonation(donation);
     console.log(`[Saweria Webhook] Donasi diterima: ${donation.donator_name} - ${donation.amount_raw}`);
     return Response.json({ success: true, message: "Donation recorded" }, { status: 200 });
   } catch (error) {

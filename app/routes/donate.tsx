@@ -11,7 +11,7 @@ export function meta() {
 
 export async function loader() {
   // Ambil data donasi terbaru dari server
-  const allDonations = getAllDonations();
+  const allDonations = await getAllDonations();
   // Sort by date descending (newest first)
   const recentDonations = [...allDonations].sort((a, b) => 
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

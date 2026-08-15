@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import { collection, doc, getDocs, setDoc, query, orderBy, getDoc } from 'firebase/firestore';
+import { db } from '~/lib/firebase.client';
 
 // Define the shape of our Saweria Webhook payload
 export interface SaweriaDonation {
@@ -19,45 +19,35 @@ export interface DonatorLeaderboardEntry {
   tier: 'DIAMOND' | 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE';
 }
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const FILE_PATH = path.join(DATA_DIR, 'donations.json');
-
-// Initialize the database file if it doesn't exist
-function initDB() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(FILE_PATH)) {
-    fs.writeFileSync(FILE_PATH, JSON.stringify([]));
-  }
-}
-
 // Get all raw donations
-export function getAllDonations(): SaweriaDonation[] {
-  initDB();
+export async function getAllDonations(): Promise<SaweriaDonation[]> {
   try {
-    const data = fs.readFileSync(FILE_PATH, 'utf-8');
-    return JSON.parse(data);
+    const q = query(collection(db, 'donations'), orderBy('created_at', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => doc.data() as SaweriaDonation);
   } catch (error) {
-    console.error("Error reading donations file:", error);
+    console.error("Error fetching donations:", error);
     return [];
   }
 }
 
 // Save a new donation from the webhook
-export function saveDonation(donation: SaweriaDonation) {
-  initDB();
-  const donations = getAllDonations();
-  // Prevent duplicate webhook events if Saweria retries
-  if (!donations.find(d => d.id === donation.id)) {
-    donations.push(donation);
-    fs.writeFileSync(FILE_PATH, JSON.stringify(donations, null, 2));
+export async function saveDonation(donation: SaweriaDonation) {
+  try {
+    const ref = doc(db, 'donations', donation.id);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      await setDoc(ref, donation);
+    }
+  } catch (error) {
+    console.error("Error saving donation:", error);
+    throw error;
   }
 }
 
 // Calculate Top Donators for the Leaderboard
-export function getTopDonators(limit: number = 5): DonatorLeaderboardEntry[] {
-  const donations = getAllDonations();
+export async function getTopDonators(limit: number = 5): Promise<DonatorLeaderboardEntry[]> {
+  const donations = await getAllDonations();
   
   // Group by donator name and sum their amounts, while keeping their latest message
   const donatorMap = new Map<string, { amount: number, message: string }>();
