@@ -149,64 +149,134 @@ export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
           <span className="text-[10px] font-mono text-foreground/50 uppercase tracking-widest">ALL TIME</span>
         </div>
         
-        <div className="flex flex-col gap-3 font-mono text-xs">
+        <div className="flex flex-col gap-2.5">
           {topWatchers.length > 0 ? (
-            topWatchers.map((user) => (
-              <div key={user.name} className="flex items-center justify-between group">
-                <div className="flex items-center gap-3">
-                  <span className={`w-5 h-5 flex items-center justify-center font-bold shrink-0 ${user.rank === 1 ? 'bg-accent text-background border border-accent shadow-[0_0_5px_rgba(255,59,59,0.8)]' : user.rank <= 3 ? 'bg-surface-soft text-foreground' : 'text-foreground/50'}`}>
-                    {user.rank}
-                  </span>
-                  
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt={user.name} className="w-6 h-6 rounded-full object-cover border border-surface-soft shrink-0" />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-surface-soft flex items-center justify-center text-[10px] font-bold text-foreground/50 shrink-0">
-                      {user.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+            topWatchers.map((user, i) => {
+              const isFirst = i === 0;
+              const isSecond = i === 1;
+              const isThird = i === 2;
 
-                  <span className={`font-bold tracking-wider ${user.rank <= 3 ? 'text-foreground' : 'text-foreground/70'} group-hover:text-accent transition-colors truncate max-w-[90px] md:max-w-[100px]`}>{user.name}</span>
+              let rankBadge = 'bg-surface border-surface-soft text-foreground/60';
+              if (isFirst) rankBadge = 'bg-yellow-400 text-black border-yellow-300 font-black';
+              else if (isSecond) rankBadge = 'bg-slate-200 text-black border-slate-100 font-black';
+              else if (isThird) rankBadge = 'bg-amber-600 text-white border-amber-500 font-black';
+
+              return (
+                <div
+                  key={user.name + i}
+                  className={`flex items-center justify-between p-2 border bg-background group transition-all ${
+                    isFirst
+                      ? 'border-yellow-400/80 shadow-[2px_2px_0px_rgba(234,179,8,0.4)]'
+                      : 'border-surface-soft hover:border-accent shadow-[2px_2px_0px_rgba(0,0,0,0.4)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    {/* Retro Avatar Frame with Rank Number */}
+                    <div className="relative shrink-0">
+                      <div className={`w-9 h-9 border bg-surface overflow-hidden flex items-center justify-center ${
+                        isFirst ? 'border-yellow-400' : 'border-surface-soft group-hover:border-accent'
+                      }`}>
+                        {user.photoURL ? (
+                          <img src={user.photoURL} alt={user.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-surface-soft flex items-center justify-center font-display text-sm text-foreground/60">
+                            {user.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className={`absolute -bottom-1 -left-1 w-4 h-4 flex items-center justify-center text-[9px] font-mono border ${rankBadge}`}>
+                        {user.rank}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-mono font-bold text-xs tracking-wider text-foreground group-hover:text-accent transition-colors truncate max-w-[100px] sm:max-w-[120px]">
+                        {user.name}
+                      </span>
+                      <span className="text-[9px] font-mono text-foreground/50">
+                        Top #{user.rank} Watcher
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-right shrink-0">
+                    <span className="font-display text-base text-accent-2">{user.eps}</span>
+                    <span className="text-[9px] font-mono text-foreground/50 block -mt-1 uppercase">EPS</span>
+                  </div>
                 </div>
-                <span className="text-foreground/50">{user.eps} <span className="text-[9px]">ANIME</span></span>
-              </div>
-            ))
+              );
+            })
           ) : (
-            <div className="text-foreground/50 text-center py-2 text-[10px] uppercase tracking-widest border-2 border-dashed border-surface-soft">
+            <div className="text-foreground/50 text-center py-2 text-[10px] uppercase tracking-widest border-2 border-dashed border-surface-soft font-mono">
               Belum ada data. Jadilah yang pertama!
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between mb-4 border-b-2 border-surface-soft pb-2 pt-6">
+        <div className="flex items-center justify-between mb-3 border-b-2 border-surface-soft pb-2 pt-6">
           <span className="text-[10px] font-mono font-bold text-accent uppercase tracking-widest">Durasi Terbanyak</span>
           <span className="text-[10px] font-mono text-foreground/50 uppercase tracking-widest">ALL TIME</span>
         </div>
-        
-        <div className="flex flex-col gap-3 font-mono text-xs">
-          {topHours.length > 0 ? (
-            topHours.map((user) => (
-              <div key={user.name} className="flex items-center justify-between group">
-                <div className="flex items-center gap-3">
-                  <span className={`w-5 h-5 flex items-center justify-center font-bold shrink-0 ${user.rank === 1 ? 'bg-accent text-background border border-accent shadow-[0_0_5px_rgba(255,59,59,0.8)]' : 'bg-surface-soft text-foreground'}`}>
-                    {user.rank}
-                  </span>
-                  
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt={user.name} className="w-6 h-6 rounded-full object-cover border border-surface-soft shrink-0" />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-surface-soft flex items-center justify-center text-[10px] font-bold text-foreground/50 shrink-0">
-                      {user.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
 
-                  <span className="font-bold tracking-wider text-foreground group-hover:text-accent transition-colors truncate max-w-[90px] md:max-w-[100px]">{user.name}</span>
+        <div className="flex flex-col gap-2.5">
+          {topHours.length > 0 ? (
+            topHours.map((user, i) => {
+              const isFirst = i === 0;
+              const isSecond = i === 1;
+              const isThird = i === 2;
+
+              let rankBadge = 'bg-surface border-surface-soft text-foreground/60';
+              if (isFirst) rankBadge = 'bg-yellow-400 text-black border-yellow-300 font-black';
+              else if (isSecond) rankBadge = 'bg-slate-200 text-black border-slate-100 font-black';
+              else if (isThird) rankBadge = 'bg-amber-600 text-white border-amber-500 font-black';
+
+              return (
+                <div
+                  key={user.name + i}
+                  className={`flex items-center justify-between p-2 border bg-background group transition-all ${
+                    isFirst
+                      ? 'border-yellow-400/80 shadow-[2px_2px_0px_rgba(234,179,8,0.4)]'
+                      : 'border-surface-soft hover:border-accent shadow-[2px_2px_0px_rgba(0,0,0,0.4)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    {/* Retro Avatar Frame with Rank Number */}
+                    <div className="relative shrink-0">
+                      <div className={`w-9 h-9 border bg-surface overflow-hidden flex items-center justify-center ${
+                        isFirst ? 'border-yellow-400' : 'border-surface-soft group-hover:border-accent'
+                      }`}>
+                        {user.photoURL ? (
+                          <img src={user.photoURL} alt={user.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-surface-soft flex items-center justify-center font-display text-sm text-foreground/60">
+                            {user.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className={`absolute -bottom-1 -left-1 w-4 h-4 flex items-center justify-center text-[9px] font-mono border ${rankBadge}`}>
+                        {user.rank}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-mono font-bold text-xs tracking-wider text-foreground group-hover:text-accent transition-colors truncate max-w-[100px] sm:max-w-[120px]">
+                        {user.name}
+                      </span>
+                      <span className="text-[9px] font-mono text-foreground/50">
+                        Top #{user.rank} Streamer
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-right shrink-0">
+                    <span className="font-display text-base text-foreground/90">{user.hours}</span>
+                    <span className="text-[9px] font-mono text-foreground/50 block -mt-1 uppercase">JAM</span>
+                  </div>
                 </div>
-                <span className="text-foreground/50">{user.hours} <span className="text-[9px]">JAM</span></span>
-              </div>
-            ))
+              );
+            })
           ) : (
-            <div className="text-foreground/50 text-center py-2 text-[10px] uppercase tracking-widest border-2 border-dashed border-surface-soft">
+            <div className="text-foreground/50 text-center py-2 text-[10px] uppercase tracking-widest border-2 border-dashed border-surface-soft font-mono">
               Belum ada data. Teruslah menonton!
             </div>
           )}
