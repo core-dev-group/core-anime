@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { sankaApi } from "~/lib/sankaClient";
 import { Link, data, useNavigate, useLocation } from "react-router";
 import type { Route } from "./+types/watch";
@@ -32,13 +32,32 @@ export function meta({ data }: { data: any }) {
   ];
 }
 
+// Allowlist domain iframe yang boleh dirender di player
+const IFRAME_ALLOWED_HOSTS = new Set([
+  "www.sankavollerei.web.id", "sankavollerei.web.id",
+  "otakudesu.blog", "www.otakudesu.blog",
+  "invidious.nerdvpn.de", "invidious.snopyta.org", "inv.tux.pizza",
+  "piped.video", "pipedapi.kavin.rocks",
+  "www.youtube.com", "youtu.be",
+  "www.google.com",
+]);
+
+function isSafeIframeUrl(urlStr: string): boolean {
+  try {
+    const u = new URL(urlStr);
+    return ["http:", "https:"].includes(u.protocol) && IFRAME_ALLOWED_HOSTS.has(u.hostname);
+  } catch {
+    return false;
+  }
+}
+
 function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, poster?: string }) {
   const [activeUrl, setActiveUrl] = useState<string>(
     episode.defaultStreamingUrl || ""
   );
-  const [activeServerId, setActiveServerId] = useState<string>(
-    episode.defaultStreamingUrl || ""
-  );
+  // State serverId terpisah dari URL agar highlight tombol tidak salah
+  const [activeServerId, setActiveServerId] = useState<string>("Default");
+  const abortRef = useRef<AbortController | null>(null);
   const { addToHistory } = useWatchHistory();
   useWatchTracker(episode.animeId || slug);
 
@@ -58,30 +77,25 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
     });
   }, [episode.animeId, slug, episode.title, episodeNum, poster]);
 
-  if (!activeUrl) {
-    return (
-      <div className="w-full aspect-video bg-surface flex items-center justify-center border-2 border-surface-soft shadow-[8px_8px_0px_rgba(46,78,78,0.5)]">
-        <p className="text-foreground/50 font-mono tracking-widest uppercase">VIDEO TIDAK TERSEDIA SAAT INI.</p>
-      </div>
-    );
-  }
+  const safeActiveUrl = isSafeIframeUrl(activeUrl) ? activeUrl : "";
 
   // Format qualities for buttons (Grouped by resolution)
-  const groupedServers: Record<string, { url: string, server: string }[]> = {};
-  
+  const groupedServers: Record<string, { id: string, url: string, server: string }[]> = {};
+
   if (episode.defaultStreamingUrl) {
-    groupedServers['Auto'] = [{ url: episode.defaultStreamingUrl, server: 'Default' }];
+    groupedServers['Auto'] = [{ id: 'Default', url: episode.defaultStreamingUrl, server: 'Default' }];
   }
-  
+
   if (episode.server?.qualities) {
     episode.server.qualities.forEach((q: any) => {
       const qualityTitle = q.title || 'Unknown';
       if (!groupedServers[qualityTitle]) groupedServers[qualityTitle] = [];
-      
+
       if (q.serverList) {
         q.serverList.forEach((s: any) => {
           groupedServers[qualityTitle].push({
-            url: s.serverId,
+            id: s.serverId,
+            url: s.url || s.serverId,
             server: s.title
           });
         });
@@ -89,12 +103,20 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
     });
   }
 
+  if (!safeActiveUrl) {
+    return (
+      <div className="w-full aspect-video bg-surface flex items-center justify-center border-2 border-surface-soft shadow-[8px_8px_0px_rgba(46,78,78,0.5)]">
+        <p className="text-foreground/50 font-mono tracking-widest uppercase">VIDEO TIDAK TERSEDIA ATAU LINK TIDAK VALID.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8 animate-fade-in-up animation-delay-100">
       {/* Video Player Frame */}
       <div className="w-full bg-black relative border-2 border-surface-soft shadow-[4px_4px_0px_rgba(46,78,78,0.5)] md:shadow-[8px_8px_0px_rgba(46,78,78,0.5)] group overflow-hidden">
         <div className="relative w-full aspect-video">
-          {activeUrl.includes('desustream') || activeUrl.includes('ondesu') ? (
+          {safeActiveUrl.includes('desustream') || safeActiveUrl.includes('ondesu') ? (
             <div className="absolute inset-0 w-full h-full z-20 bg-surface flex flex-col items-center justify-center gap-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -107,7 +129,7 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
           ) : (
             <iframe 
               key={activeUrl}
-              src={activeUrl}
+              src={safeActiveUrl}
               className="absolute inset-0 w-full h-full z-20"
               allowFullScreen
               frameBorder="0"
@@ -141,24 +163,31 @@ function PlayerClient({ episode, slug, poster }: { episode: any, slug: string, p
                   <button
                     key={idx}
                     onClick={async () => {
-                      setActiveServerId(stream.url); // Use stream.url (which is serverId or 'Default') as the unique identifier
+                      // Cancel request sebelumnya agar tidak race condition
+                      if (abortRef.current) abortRef.current.abort();
+                      const ctrl = new AbortController();
+                      abortRef.current = ctrl;
+
+                      setActiveServerId(stream.id);
                       if (stream.server === 'Default') {
                         setActiveUrl(stream.url);
                       } else {
                         try {
-                          const res = await fetch(`/api/sanka?id=${encodeURIComponent(stream.url)}`).then(r => r.json());
+                          const res = await fetch(`/api/sanka?id=${encodeURIComponent(stream.id)}`, { signal: ctrl.signal }).then(r => r.json());
                           if (res?.url) {
                             setActiveUrl(res.url);
                           } else {
                             alert('Gagal mengambil tautan server pihak ketiga.');
                           }
-                        } catch (e) {
-                          alert('Gagal menghubungi server penyedia.');
+                        } catch (e: any) {
+                          if (e?.name !== 'AbortError') {
+                            alert('Gagal menghubungi server penyedia.');
+                          }
                         }
                       }
                     }}
                     className={`px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-widest transition-all border ${
-                      activeServerId === stream.url
+                      activeServerId === stream.id
                         ? "bg-accent text-white border-accent shadow-[3px_3px_0px_rgba(255,59,59,0.5)]" 
                         : "bg-background text-foreground/70 hover:text-foreground hover:border-accent border-surface-soft shadow-[2px_2px_0px_rgba(46,78,78,0.5)] hover:-translate-y-0.5"
                     }`}

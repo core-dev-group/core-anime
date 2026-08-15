@@ -3,14 +3,19 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAShUa8BqPbZCQqsgj7UwMA3_8GC968eho",
-  authDomain: "core-anime-v7.firebaseapp.com",
-  projectId: "core-anime-v7",
-  storageBucket: "core-anime-v7.firebasestorage.app",
-  messagingSenderId: "913618656952",
-  appId: "1:913618656952:web:3ed3014b0426b76ec55e4d",
-  measurementId: "G-9QGQS0WM1W"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
+
+const requiredConfig = Object.entries(firebaseConfig).filter(([, value]) => !value);
+if (requiredConfig.length > 0) {
+  throw new Error(`Missing Firebase environment variables: ${requiredConfig.map(([key]) => key).join(", ")}`);
+}
 
 // Initialize Firebase only once
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();

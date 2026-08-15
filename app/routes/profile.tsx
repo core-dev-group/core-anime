@@ -108,6 +108,13 @@ export default function ProfilePage() {
     if (!profile || !auth.currentUser) return;
     
     // Validasi kosong
+    // Validasi sanitizer: lowercase, alphanumeric, min 3, max 20, no unicode ambigu
+    const sanitized = editName.trim().toLowerCase();
+    const asciiOnly = sanitized.replace(/[^a-z0-9]/g, "");
+    if (!asciiOnly || asciiOnly.length < 3 || asciiOnly.length > 20 || asciiOnly !== sanitized) {
+      alert("Username hanya boleh huruf a-z, angka, 3-20 karakter, tanpa spasi/karakter aneh. Tidak case sensitive.");
+      return;
+    }
     if (!editName.trim()) {
       alert("Username tidak boleh kosong!");
       return;
@@ -117,29 +124,30 @@ export default function ProfilePage() {
     try {
       // 0. Cek apakah username sudah ada yang pakai (Unique Username Check)
       // Kita melakukan query ke Firestore untuk mencari user dengan displayName yang sama
-      if (editName !== profile.displayName) {
+      // Normalize untuk simpan dan query case-insensitive
+      const normalizedName = editName.trim().toLowerCase();
+      if (normalizedName !== profile.displayName.toLowerCase()) {
         const { collection, query, where, getDocs } = await import("firebase/firestore");
         const usersRef = collection(db, "users");
-        const q = query(usersRef, where("displayName", "==", editName));
+        const q = query(usersRef, where("displayName", "==", normalizedName));
         const querySnapshot = await getDocs(q);
-        
+
         if (!querySnapshot.empty) {
-          // Artinya ada dokumen dengan username tersebut
           setIsSaving(false);
-          alert(`Username "${editName}" sudah digunakan oleh orang lain. Silakan pilih nama lain.`);
+          alert(`Username "${normalizedName}" sudah digunakan oleh orang lain. Silakan pilih nama lain.`);
           return;
         }
       }
 
       // 1. Update Firebase Auth Profile
       await updateProfile(auth.currentUser, {
-        displayName: editName
+        displayName: editName.trim().toLowerCase()
       });
-      
+
       // 2. Update Firestore Document
       const userRef = doc(db, "users", profile.uid);
       await updateDoc(userRef, {
-        displayName: editName
+        displayName: editName.trim().toLowerCase()
       });
       
       // Reload untuk memastikan data sinkron

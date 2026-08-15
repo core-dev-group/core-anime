@@ -60,7 +60,7 @@ Ingin menjalankan proyek ini di komputer Anda sendiri? Ikuti langkah-langkah ber
    ```
 
 4. **Konfigurasi Firebase**
-   Pastikan Anda memasukkan *credentials* Firebase Client Anda di dalam file `app/lib/firebase.client.ts`.
+   Copy semua konfigurasi Firebase dari [console.firebase.google.com](https://console.firebase.google.com) > Project Settings > Your Apps ke file `.env`, ikuti format di `.env.example`. **Jangan hardcode key ke dalam source code.**
 
 5. **Generate Prisma Client**
    ```bash

@@ -1,11 +1,44 @@
 import { type Route } from "./+types/api.proxy-stream";
 
+// Allowlist domain yang boleh di-proxy. Tambah domain baru di sini bila perlu.
+const ALLOWED_HOSTS = new Set([
+  "www.sankavollerei.web.id",
+  "sankavollerei.web.id",
+  "otakudesu.blog",
+  "www.otakudesu.blog",
+  "invidious.nerdvpn.de",
+  "invidious.snopyta.org",
+  "inv.tux.pizza",
+  "pipedapi.kavin.rocks",
+  "piped.video",
+  "www.youtube.com",
+  "youtu.be",
+]);
+
+// Block internal/private IP ranges
+const BLOCKED_HOSTNAMES = /^(localhost|127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|::1|0\.0\.0\.0)/;
+
+function isAllowedUrl(urlStr: string): boolean {
+  try {
+    const u = new URL(urlStr);
+    if (!["http:", "https:"].includes(u.protocol)) return false;
+    if (BLOCKED_HOSTNAMES.test(u.hostname)) return false;
+    return ALLOWED_HOSTS.has(u.hostname);
+  } catch {
+    return false;
+  }
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const targetUrl = url.searchParams.get("url");
 
   if (!targetUrl) {
     return new Response("Missing url parameter", { status: 400 });
+  }
+
+  if (!isAllowedUrl(targetUrl)) {
+    return new Response("Domain tidak diizinkan", { status: 403 });
   }
 
   try {
@@ -22,16 +55,16 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
 
     const contentType = response.headers.get("content-type") || "";
-    
+
     // If it's HTML, we need to inject a <base> tag to fix relative asset paths
     if (contentType.includes("text/html")) {
       const html = await response.text();
-      
+
       // Calculate the directory of the target URL for the base tag
       const baseUrlObj = new URL(targetUrl);
       baseUrlObj.search = '';
       const baseHref = baseUrlObj.toString().replace(/\/[^\/]*$/, '/');
-      
+
       let modifiedHtml = html;
       if (/<head[^>]*>/i.test(html)) {
         modifiedHtml = html.replace(
@@ -46,7 +79,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       } else {
         modifiedHtml = `<head><base href="${baseHref}"></head>\n` + html;
       }
-      
+
       return new Response(modifiedHtml, {
         headers: {
           "Content-Type": contentType,

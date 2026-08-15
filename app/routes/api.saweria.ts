@@ -1,43 +1,70 @@
 import type { ActionFunctionArgs } from "react-router";
 import { saveDonation, type SaweriaDonation } from "../lib/donations.server";
 
+function isValidDonationPayload(p: any): p is SaweriaDonation {
+  return (
+    typeof p === "object" &&
+    p !== null &&
+    typeof p.id === "string" && p.id.length > 0 &&
+    typeof p.donator_name === "string" && p.donator_name.length > 0 &&
+    typeof p.donator_email === "string" &&
+    typeof p.amount_raw === "number" && p.amount_raw >= 0 &&
+    typeof p.message === "string" &&
+    typeof p.created_at === "string" && p.created_at.length > 0
+  );
+}
+
 export async function action({ request }: ActionFunctionArgs) {
-  // Hanya menerima metode POST
   if (request.method !== "POST") {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
 
+  // Proteksi: Cek token rahasia di query string
+  const url = new URL(request.url);
+  const token = url.searchParams.get("token");
+  const secret = process.env.SAWERIA_WEBHOOK_TOKEN;
+  if (secret && token !== secret) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // (Jika Saweria kirim signature di masa depan: validasi juga di sini)
+
+  let payload: unknown;
   try {
-    // 1. Ambil Secret Token (Opsional, tapi disarankan)
-    // Saweria mengirimkan header "saweria-webhook-signature"
-    // Namun untuk tahap ini, kita abaikan dulu validasi signature demi kemudahan tes lokal.
-    
-    // 2. Baca body JSON
-    const payload = await request.json();
-    
-    // 3. Pastikan tipe datanya adalah "donation"
-    if (payload.type === "donation") {
-      const donation: SaweriaDonation = {
-        id: payload.id,
-        donator_name: payload.donator_name,
-        donator_email: payload.donator_email,
-        amount_raw: payload.amount_raw,
-        message: payload.message,
-        created_at: payload.created_at,
-      };
+    payload = await request.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
+  }
 
-      // 4. Simpan ke database lokal kita
-      saveDonation(donation);
-      console.log(`[Saweria Webhook] Donasi diterima: ${donation.donator_name} - ${donation.amount_raw}`);
-      
-      return Response.json({ success: true, message: "Donation recorded" }, { status: 200 });
-    } else {
-      // Tipe event lain (misal: "vote", dsb) kita hiraukan
-      return Response.json({ success: true, message: "Ignored event type" }, { status: 200 });
-    }
-
-  } catch (error) {
-    console.error("[Saweria Webhook] Error processing webhook:", error);
+  if (typeof payload !== "object" || payload === null) {
     return Response.json({ error: "Invalid payload" }, { status: 400 });
+  }
+
+  const p = payload as Record<string, unknown>;
+
+  if (p.type !== "donation") {
+    return Response.json({ success: true, message: "Ignored event type" }, { status: 200 });
+  }
+
+  if (!isValidDonationPayload(p)) {
+    return Response.json({ error: "Missing or invalid donation fields" }, { status: 400 });
+  }
+
+  const donation: SaweriaDonation = {
+    id: p.id,
+    donator_name: p.donator_name,
+    donator_email: p.donator_email,
+    amount_raw: p.amount_raw,
+    message: p.message,
+    created_at: p.created_at,
+  };
+
+  try {
+    saveDonation(donation);
+    console.log(`[Saweria Webhook] Donasi diterima: ${donation.donator_name} - ${donation.amount_raw}`);
+    return Response.json({ success: true, message: "Donation recorded" }, { status: 200 });
+  } catch (error) {
+    console.error("[Saweria Webhook] Error saving donation:", error);
+    return Response.json({ error: "Failed to save donation" }, { status: 500 });
   }
 }
