@@ -78,6 +78,26 @@ export function useAuth() {
     }
   };
 
+  const linkWithGoogle = async () => {
+    if (!auth.currentUser) return;
+    try {
+      const { linkWithPopup } = await import("firebase/auth");
+      const provider = new GoogleAuthProvider();
+      const result = await linkWithPopup(auth.currentUser, provider);
+      const userRef = doc(db, "users", result.user.uid);
+      const updates = {
+        isGuest: false,
+        displayName: result.user.displayName || profile?.displayName,
+        photoURL: result.user.photoURL || profile?.photoURL
+      };
+      await setDoc(userRef, updates, { merge: true });
+      window.location.reload();
+    } catch (error: any) {
+      console.error("Error linking with Google", error);
+      alert("Gagal menautkan akun Google: " + (error.message || "Terjadi kesalahan"));
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -92,6 +112,7 @@ export function useAuth() {
     isLoading,
     loginWithGoogle,
     loginAsGuest,
+    linkWithGoogle,
     logout
   };
 }
