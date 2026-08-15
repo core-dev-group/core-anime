@@ -2,69 +2,137 @@ import { Link } from "react-router";
 
 export function Footer() {
   return (
-    <footer className="bg-background border-t-2 border-surface-soft mt-16 pt-12 pb-8 relative overflow-hidden">
-      {/* Background scanline effect */}
-      <div className="absolute inset-0 pointer-events-none crt-scanline opacity-20"></div>
-      
-      <div className="container mx-auto px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col md:flex-row justify-between gap-12 md:gap-8">
-          {/* Brand Section */}
-          <div className="flex flex-col items-start text-left max-w-sm">
-            <Link to="/" className="flex items-center gap-3 group mb-5">
-              <div className="w-12 h-12 border-2 border-accent shadow-[4px_4px_0px_rgba(255,59,59,0.5)] group-hover:-translate-y-1 group-hover:shadow-[4px_4px_0px_rgba(255,201,60,0.5)] transition-all duration-300 overflow-hidden flex-shrink-0 bg-black">
+    <footer className="bg-surface border-t-4 border-surface-soft mt-20 relative overflow-hidden text-foreground">
+      {/* Background CRT scanline & Retro Grid */}
+      <div className="absolute inset-0 pointer-events-none crt-scanline opacity-25"></div>
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-accent-2 to-static-teal"></div>
+
+      {/* Retro Broadcast Ticker / Channel Bar */}
+      <div className="border-b-2 border-surface-soft/80 bg-background/90 px-4 py-2 font-mono text-[10px] tracking-widest uppercase flex flex-wrap justify-between items-center gap-2">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5 text-accent font-bold">
+            <span className="w-2 h-2 rounded-full bg-accent animate-ping"></span>
+            SYS STATUS: ONLINE
+          </span>
+          <span className="text-foreground/40">|</span>
+          <span className="text-foreground/70">BROADCAST BAND: CH-89.4 CRT</span>
+        </div>
+        <div className="flex items-center gap-3 text-foreground/60">
+          <span>REGION: ASIA-ID</span>
+          <span className="text-foreground/40">|</span>
+          <span className="text-accent-2 font-bold">NO ADS • HIGH QUALITY</span>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-6 lg:px-8 py-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+
+          {/* Col 1: Brand & Bio (5 cols) */}
+          <div className="lg:col-span-5 flex flex-col items-start">
+            <Link to="/" className="flex items-center gap-3 group mb-4">
+              <div className="w-12 h-12 border-2 border-accent shadow-[4px_4px_0px_rgba(255,59,59,0.5)] group-hover:-translate-y-1 group-hover:shadow-[4px_4px_0px_rgba(255,201,60,0.5)] transition-all duration-300 overflow-hidden shrink-0 bg-black">
                 <img src="/logo.png" alt="CoreAnime Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="text-2xl font-display uppercase tracking-widest text-foreground">
-                CORE<span className="text-accent">ANIME</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="text-3xl font-display uppercase tracking-widest text-foreground">
+                  CORE<span className="text-accent">ANIME</span>
+                </span>
+                <span className="text-[9px] font-mono text-accent-2 tracking-widest -mt-1 font-bold">
+                  RETRO ANIME BROADCAST
+                </span>
+              </div>
             </Link>
-            <p className="text-foreground/70 font-mono text-sm leading-relaxed mb-6">
-              Agregator anime tercepat dengan sistem fallback otomatis untuk pengalaman menonton tanpa hambatan. Siaran 24/7 non-stop.
+
+            <p className="text-foreground/70 font-mono text-xs leading-relaxed mb-6 max-w-md">
+              Portal streaming & arsip anime subtitle Indonesia bertema siaran analog retro. Dilengkapi sistem multiserver fallback otomatis tanpa iklan mengganggu.
             </p>
-            
-            <div className="flex items-center gap-2 px-3 py-2 bg-surface border-2 border-surface-soft text-accent text-xs font-bold uppercase tracking-widest">
-              <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-              <span>SIGNAL STRENGTH: EXCELLENT</span>
+
+            <div className="flex flex-wrap gap-2">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-background border border-surface-soft text-accent text-[11px] font-mono font-bold uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,0.4)]">
+                <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
+                <span>SIGNAL: 100% EXCELLENT</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-background border border-surface-soft text-accent-2 text-[11px] font-mono font-bold uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,0.4)]">
+                <span>FPS: 60 SYNC</span>
+              </div>
             </div>
           </div>
 
-          {/* Links & Info Section */}
-          <div className="flex flex-col items-start md:items-end text-left md:text-right font-mono text-xs text-foreground/50 w-full md:w-auto">
-            <div className="flex flex-col gap-3 w-full md:max-w-md items-start md:items-end">
-              <p className="flex items-center gap-2 text-sm text-foreground/80">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-accent-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          {/* Col 2: Navigation Links (2 cols) */}
+          <div className="lg:col-span-2 flex flex-col font-mono text-xs">
+            <h4 className="font-display text-base uppercase tracking-widest text-foreground border-b-2 border-surface-soft pb-1 mb-4 flex items-center gap-2">
+              <span className="text-accent">▶</span> MENU
+            </h4>
+            <div className="flex flex-col gap-2.5 text-foreground/70 font-semibold tracking-wider">
+              <Link to="/home" className="hover:text-accent hover:translate-x-1 transition-all">BERANDA</Link>
+              <Link to="/directory" className="hover:text-accent hover:translate-x-1 transition-all">DIREKTORI</Link>
+              <Link to="/genres" className="hover:text-accent hover:translate-x-1 transition-all">GENRE</Link>
+              <Link to="/complete" className="hover:text-accent hover:translate-x-1 transition-all">TAMAT</Link>
+              <Link to="/bookmarks" className="hover:text-accent hover:translate-x-1 transition-all">BOOKMARK</Link>
+            </div>
+          </div>
+
+          {/* Col 3: Community & Support (2 cols) */}
+          <div className="lg:col-span-2 flex flex-col font-mono text-xs">
+            <h4 className="font-display text-base uppercase tracking-widest text-foreground border-b-2 border-surface-soft pb-1 mb-4 flex items-center gap-2">
+              <span className="text-accent-2">★</span> SUPPORT
+            </h4>
+            <div className="flex flex-col gap-2.5 text-foreground/70 font-semibold tracking-wider">
+              <Link to="/donate" className="text-accent hover:text-white transition-colors flex items-center gap-1 font-bold">
+                <span>SAWERIA</span> &raquo;
+              </Link>
+              <Link to="/profile" className="hover:text-accent hover:translate-x-1 transition-all">KARTU MEMBER</Link>
+              <Link to="/tos" className="hover:text-accent hover:translate-x-1 transition-all">TERMS (S&K)</Link>
+              <Link to="/privacy" className="hover:text-accent hover:translate-x-1 transition-all">PRIVASI</Link>
+            </div>
+          </div>
+
+          {/* Col 4: Feed & API Provider Card (3 cols) */}
+          <div className="lg:col-span-3 flex flex-col font-mono text-xs">
+            <h4 className="font-display text-base uppercase tracking-widest text-foreground border-b-2 border-surface-soft pb-1 mb-4 flex items-center gap-2">
+              <span className="text-cyan-400">◆</span> DATA SOURCE
+            </h4>
+            <div className="bg-background border-2 border-surface-soft p-3.5 shadow-[4px_4px_0px_rgba(46,78,78,0.4)]">
+              <p className="text-[11px] text-foreground/80 leading-relaxed mb-2">
+                API agregator didukung secara independen oleh:
+              </p>
+              <div className="text-accent-2 font-display text-base tracking-wider uppercase flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                ANIME API PROVIDED BY <span className="font-bold text-foreground">SANKA VOLLEREI</span>
+                SANKA VOLLEREI
+              </div>
+              <p className="text-[10px] text-foreground/50 mt-2 italic border-t border-surface-soft/60 pt-2">
+                High availability multi-source anime gateway.
               </p>
-              
-              <div className="flex flex-wrap gap-4 mt-2 font-bold tracking-widest text-[11px] text-foreground/70">
-                <Link to="/tos" className="hover:text-accent transition-colors">TERMS OF SERVICE</Link>
-                <span className="hidden md:inline">|</span>
-                <Link to="/privacy" className="hover:text-accent transition-colors">PRIVACY POLICY</Link>
-              </div>
-
-              <div className="mt-6 border-t-2 border-surface-soft/50 pt-5 w-full">
-                <p className="text-[10px] leading-relaxed opacity-70">
-                  DISCLAIMER: SITUS INI TIDAK MENYIMPAN FILE APAPUN DI SERVERNYA. SEMUA KONTEN DISEDIAKAN OLEH PIHAK KETIGA.
-                </p>
-              </div>
             </div>
           </div>
+
         </div>
-        
-        {/* Copyright Bar */}
-        <div className="border-t-2 border-surface-soft mt-12 pt-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 font-mono text-[11px] text-foreground/50">
+
+        {/* Disclaimer Box */}
+        <div className="mt-10 p-3 bg-background/60 border border-surface-soft/60 font-mono text-[10px] text-foreground/50 leading-relaxed">
+          <span className="text-accent font-bold">DISCLAIMER:</span> CoreAnime tidak menyimpan konten media video apapun di server fisik kami. Seluruh video dan materi streaming ditautkan dari penyedia pihak ketiga yang tersedia secara publik di internet.
+        </div>
+
+        {/* Bottom Copyright & Dev Credit */}
+        <div className="border-t-2 border-surface-soft mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 font-mono text-[11px] text-foreground/60">
           <p>
-            &copy; {new Date().getFullYear()} COREANIME. ALL RIGHTS RESERVED.
+            &copy; {new Date().getFullYear()} COREANIME. BROADCASTING WITH LOVE.
           </p>
-          <p className="flex items-center gap-2 flex-wrap">
-            <span>POWERED BY</span>
-            <a href="https://core-dev-group.my.id" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-white transition-colors font-bold uppercase tracking-wider bg-surface px-2 py-1 border border-surface-soft">
+          <div className="flex items-center gap-2">
+            <span>DEVELOPED BY</span>
+            <a
+              href="https://core-dev-group.my.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent hover:text-white transition-colors font-bold uppercase tracking-wider bg-background px-2.5 py-1 border border-surface-soft shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
+            >
               CORE DEV GROUP
             </a>
-          </p>
+          </div>
         </div>
+
       </div>
     </footer>
   );
