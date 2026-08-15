@@ -16,6 +16,7 @@ export interface DonatorLeaderboardEntry {
   amount_formatted: string;
   message: string;
   tier: 'DIAMOND' | 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE';
+  photoURL?: string;
 }
 
 // Get all raw donations
@@ -76,6 +77,16 @@ export async function getTopDonators(limit: number = 5): Promise<DonatorLeaderbo
     .sort((a, b) => b.amount - a.amount)
     .slice(0, limit);
 
+  // Fetch users to map profile pictures
+  const usersSnapshot = await getDocs(collection(db, 'users'));
+  const userPhotos = new Map<string, string>();
+  usersSnapshot.forEach(doc => {
+    const data = doc.data();
+    if (data.displayName && data.photoURL) {
+      userPhotos.set(data.displayName.trim().toUpperCase(), data.photoURL);
+    }
+  });
+
   // Format currency and assign tiers
   return sortedList.map(entry => {
     let tier: DonatorLeaderboardEntry['tier'] = 'BRONZE';
@@ -89,7 +100,8 @@ export async function getTopDonators(limit: number = 5): Promise<DonatorLeaderbo
       amount: entry.amount,
       amount_formatted: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(entry.amount),
       message: entry.message,
-      tier
+      tier,
+      photoURL: userPhotos.get(entry.name)
     };
   });
 }
