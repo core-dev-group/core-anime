@@ -45,7 +45,9 @@ const IFRAME_ALLOWED_HOSTS = new Set([
 function isSafeIframeUrl(urlStr: string): boolean {
   try {
     const u = new URL(urlStr);
-    return ["http:", "https:"].includes(u.protocol) && IFRAME_ALLOWED_HOSTS.has(u.hostname);
+    // Hanya blokir protokol berbahaya (javascript:, data:, dll)
+    // Domain tidak di-whitelist karena sumber streaming pihak ketiga sangat bervariasi
+    return u.protocol === "https:" || u.protocol === "http:";
   } catch {
     return false;
   }
