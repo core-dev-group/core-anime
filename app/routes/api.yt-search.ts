@@ -18,6 +18,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     searchUrl.searchParams.set("part", "id");
     searchUrl.searchParams.set("q", q);
     searchUrl.searchParams.set("type", "video");
+    searchUrl.searchParams.set("videoEmbeddable", "true");
     searchUrl.searchParams.set("maxResults", "1");
     searchUrl.searchParams.set("key", apiKey);
 
