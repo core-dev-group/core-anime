@@ -5,75 +5,75 @@ import type { Route } from "./+types/detail";
 import { Link, data, useNavigate } from "react-router";
 import { useBookmarks } from "~/hooks/useBookmarks";
 
-// Inline YouTube Player Component to fetch and embed video directly (Lazy Loaded)
 function InlineYouTubePlayer({ query, title }: { query: string; title: string }) {
   const [embedUrl, setEmbedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [inView, setInView] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [hasStarted, setHasStarted] = useState(false);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (containerRef.current) observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!inView) return;
-    let isMounted = true;
+  const fetchVideo = () => {
+    if (embedUrl || loading) return;
+    setHasStarted(true);
     setLoading(true);
-    // Simple sanitization to improve search hit rate for long titles
     const cleanTitle = title.replace(/Season \d+|Part \d+/gi, '').trim();
     fetch(`/api/yt-search?q=${encodeURIComponent(query + ' ' + cleanTitle)}`)
       .then(res => res.json())
       .then(data => {
-        if (isMounted) {
-          if (data.embedUrl) setEmbedUrl(data.embedUrl);
-          else setError(true);
-          setLoading(false);
-        }
+        if (data.embedUrl) setEmbedUrl(data.embedUrl);
+        else setError(true);
+        setLoading(false);
       })
       .catch(() => {
-        if (isMounted) {
-          setError(true);
-          setLoading(false);
-        }
+        setError(true);
+        setLoading(false);
       });
-    return () => { isMounted = false; };
-  }, [inView, query, title]);
+  };
 
   return (
-    <div ref={containerRef} className="w-full aspect-video border-2 border-surface-soft bg-black relative mb-4 shadow-[4px_4px_0px_rgba(46,78,78,0.3)] hover:border-accent transition-colors group">
-      {loading && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-          <div className="w-8 h-8 border-2 border-surface-soft border-t-accent rounded-full animate-spin"></div>
-          <span className="text-xs text-foreground/50 tracking-widest uppercase">Searching...</span>
-        </div>
+    <div className="w-full aspect-video border-2 border-surface-soft bg-black relative mb-4 shadow-[4px_4px_0px_rgba(46,78,78,0.3)] hover:border-accent transition-colors group overflow-hidden">
+      {!hasStarted && (
+        <button
+          onClick={fetchVideo}
+          className="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-3 bg-surface hover:bg-surface-soft transition-colors cursor-pointer"
+        >
+          <div className="w-12 h-12 border-2 border-accent bg-accent/20 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+          <span className="font-mono text-xs font-bold text-foreground/80 tracking-widest uppercase">
+            PUTAR VIDEO OST
+          </span>
+        </button>
       )}
-      
-      {error && !loading && (
+
+      {loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-surface">
-          <span className="text-accent font-bold tracking-widest text-sm">NO VIDEO FOUND</span>
-          <span className="text-xs text-foreground/50 text-center px-4">Video mungkin diblokir atau tidak tersedia</span>
+          <div className="w-8 h-8 border-2 border-surface-soft border-t-accent rounded-full animate-spin"></div>
+          <span className="text-xs font-mono text-foreground/50 tracking-widest uppercase">MENCARI DI YOUTUBE...</span>
         </div>
       )}
 
-      {embedUrl && !error && !loading && (
+      {error && !loading && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-surface">
+          <span className="text-accent font-bold font-mono tracking-widest text-sm uppercase">VIDEO TIDAK DITEMUKAN</span>
+          <button
+            onClick={() => { setError(false); fetchVideo(); }}
+            className="text-xs font-mono text-accent hover:text-white uppercase tracking-widest border border-accent px-2 py-1"
+          >
+            COBA LAGI
+          </button>
+        </div>
+      )}
+
+      {embedUrl && !loading && (
         <iframe
-          src={embedUrl.includes('?') ? `${embedUrl}&autoplay=0` : `${embedUrl}?autoplay=0&controls=1`}
+          src={`${embedUrl}?autoplay=1&rel=0&modestbranding=1`}
           title="YouTube video player"
           className="w-full h-full"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
         ></iframe>
       )}
     </div>
@@ -85,7 +85,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!slug) throw data("Missing slug", { status: 400 });
 
   const detailResponse = await sankaApi.getAnimeDetail(slug);
-  const malData = await getCompleteAnimeDetail(detailResponse.title);
+  const malData = await getCompleteAnimeDetail(detailResponse);
 
   return { detail: detailResponse, malData };
 }
@@ -115,16 +115,16 @@ export default function DetailPage({ loaderData }: Route.ComponentProps) {
   )).filter(Boolean).sort() as string[];
 
   const renderSynopsis = () => {
-    // Prefer MAL synopsis
-    if (malData?.malInfo?.synopsis) {
-      return malData.malInfo.synopsis.split('\n').filter((p: string) => p.trim()).map((p: string, i: number) => (
-        <p key={i} className="mb-4">{p.replace('[Written by MAL Rewrite]', '').trim()}</p>
-      ));
-    }
-    // Fallback to Sanka
+    // Prefer Sanka (Otakudesu) synopsis for Indonesian language
     if (detail.synopsis?.paragraphs) {
       return detail.synopsis.paragraphs.map((p: string, i: number) => (
         <p key={i} className="mb-4">{p}</p>
+      ));
+    }
+    // Fallback to MAL synopsis if Otakudesu is empty
+    if (malData?.malInfo?.synopsis) {
+      return malData.malInfo.synopsis.split('\n').filter((p: string) => p.trim()).map((p: string, i: number) => (
+        <p key={i} className="mb-4">{p.replace('[Written by MAL Rewrite]', '').trim()}</p>
       ));
     }
     return <p>{detail.synopsis || "SINOPSIS TIDAK TERSEDIA."}</p>;
@@ -141,41 +141,42 @@ export default function DetailPage({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <div className="container mx-auto px-4 py-8 max-w-6xl animate-fade-in-up">
-      
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-6xl animate-fade-in-up">
+
       {/* Top Bar with Back Button */}
-      <div className="flex items-center justify-between mb-8 border-b-2 border-surface-soft pb-4">
-        <button 
+      <div className="flex items-center justify-between mb-4 sm:mb-8 border-b-2 border-surface-soft pb-3 sm:pb-4">
+        <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-foreground/70 hover:text-accent font-mono text-sm tracking-widest uppercase transition-colors group"
+          className="flex items-center gap-1.5 sm:gap-2 text-foreground/70 hover:text-accent font-mono text-xs sm:text-sm tracking-widest uppercase transition-colors group"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           KEMBALI
         </button>
-        
-        <div className="flex items-center gap-2 px-3 py-1 bg-surface border-2 border-surface-soft text-[10px] font-mono text-accent">
-          <div className="w-2 h-2 bg-accent animate-pulse"></div>
+
+        <div className="flex items-center gap-2 px-2 sm:px-3 py-1 bg-surface border-2 border-surface-soft text-[9px] sm:text-[10px] font-mono text-accent">
+          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-accent animate-pulse"></div>
           <span>RECORDING...</span>
         </div>
       </div>
 
       {/* Hero Section (Image + Main Title + Stats) */}
-      <div className="flex flex-col md:flex-row gap-8 lg:gap-12 relative z-10 mb-12">
-        
+      <div className="flex flex-col md:flex-row gap-5 sm:gap-8 lg:gap-12 relative z-10 mb-6 sm:mb-12">
+
         {/* Left Column: Image */}
-        <div className="w-full max-w-xs mx-auto md:max-w-none md:w-1/3 lg:w-1/4 flex-shrink-0">
-          <div className="relative border-2 border-surface-soft shadow-[8px_8px_0px_rgba(46,78,78,0.5)] bg-surface aspect-[3/4] overflow-hidden group">
-            <img 
-              src={detail.poster || detail.thumbnail || detail.image} 
+        <div className="w-[180px] sm:w-[220px] mx-auto md:mx-0 md:w-1/3 lg:w-1/4 flex-shrink-0">
+          <div className="relative border-2 border-surface-soft shadow-[4px_4px_0px_rgba(46,78,78,0.5)] md:shadow-[8px_8px_0px_rgba(46,78,78,0.5)] bg-surface aspect-[3/4] overflow-hidden group">
+            <img
+              src={detail.poster || detail.thumbnail || detail.image}
               alt={detail.title}
               className="w-full h-full object-cover transition-all duration-700"
+              referrerPolicy="no-referrer"
             />
             <div className="absolute inset-0 pointer-events-none crt-scanline opacity-30"></div>
-            
+
             {detail.score && (
-              <div className="absolute top-0 right-0 bg-accent text-background px-3 py-1.5 font-bold font-mono text-sm border-l-2 border-b-2 border-surface shadow-[-2px_2px_0px_rgba(0,0,0,0.5)] flex items-center gap-1">
+              <div className="absolute top-0 right-0 bg-accent text-background px-2 sm:px-3 py-1 sm:py-1.5 font-bold font-mono text-xs sm:text-sm border-l-2 border-b-2 border-surface shadow-[-2px_2px_0px_rgba(0,0,0,0.5)] flex items-center gap-1">
                 <span>★</span> {detail.score}
               </div>
             )}
@@ -183,13 +184,13 @@ export default function DetailPage({ loaderData }: Route.ComponentProps) {
         </div>
 
         {/* Right Column: Title & Top Stats */}
-        <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col justify-center">
-          <div className="flex justify-between items-start mb-4 gap-4">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground uppercase leading-none tracking-wide drop-shadow-md break-words">
-              {malData?.malInfo?.title || detail.title}
+        <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col justify-center text-center md:text-left">
+          <div className="flex justify-between items-start mb-2 sm:mb-4 gap-3 sm:gap-4">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground uppercase leading-tight md:leading-none tracking-wide drop-shadow-md break-words flex-1 text-left">
+              {detail.title}
             </h1>
             {isLoaded && (
-              <button 
+              <button
                 onClick={() => toggleBookmark({
                   id: detail.animeId,
                   slug: detail.animeId,
@@ -199,27 +200,27 @@ export default function DetailPage({ loaderData }: Route.ComponentProps) {
                   status: detail.status,
                   score: detail.score,
                 } as any)}
-                className={`p-3 transition-colors flex-shrink-0 border-2 ${
-                  isBookmarked(detail.animeId) 
-                    ? "bg-accent text-white shadow-[4px_4px_0px_rgba(255,59,59,0.5)] border-accent" 
-                    : "bg-surface text-foreground/70 hover:text-foreground hover:bg-surface-soft border-surface-soft shadow-[4px_4px_0px_rgba(46,78,78,0.5)]"
+                className={`p-2 sm:p-3 transition-colors flex-shrink-0 border-2 ${
+                  isBookmarked(detail.animeId)
+                    ? "bg-accent text-white shadow-[2px_2px_0px_rgba(255,59,59,0.5)] sm:shadow-[4px_4px_0px_rgba(255,59,59,0.5)] border-accent"
+                    : "bg-surface text-foreground/70 hover:text-foreground hover:bg-surface-soft border-surface-soft shadow-[2px_2px_0px_rgba(46,78,78,0.5)] sm:shadow-[4px_4px_0px_rgba(46,78,78,0.5)]"
                 }`}
                 title={isBookmarked(detail.animeId) ? "Hapus Bookmark" : "Tambah Bookmark"}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill={isBookmarked(detail.animeId) ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill={isBookmarked(detail.animeId) ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M5 5v16l7-3.5 7 3.5V5a2 2 0 00-2-2H7a2 2 0 00-2 2z" />
                 </svg>
               </button>
             )}
           </div>
-          
-          {malData?.malInfo?.title_japanese && (
-            <h2 className="text-xl font-display text-foreground/50 mb-6">{malData.malInfo.title_japanese}</h2>
-          )}
 
-          <div className="flex flex-wrap gap-2 mb-8">
-            {(malData?.malInfo?.genres || detail.genreList)?.map((g: any) => (
-              <span key={g.mal_id || g.genreId} className="px-3 py-1.5 bg-surface-soft/50 hover:bg-accent hover:text-white text-foreground/70 text-[10px] font-mono font-bold uppercase tracking-widest transition-colors border border-surface-soft hover:border-accent cursor-pointer">
+          <h2 className="text-sm sm:text-xl font-display text-foreground/50 mb-3 sm:mb-6 text-left">
+            {detail.japanese || (malData?.malInfo?.title_japanese ? `(${malData.malInfo.title_japanese})` : '')}
+          </h2>
+
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-8 justify-start">
+            {(detail.genreList || malData?.malInfo?.genres)?.map((g: any) => (
+              <span key={g.mal_id || g.genreId} className="px-2 sm:px-3 py-1 sm:py-1.5 bg-surface-soft/50 hover:bg-accent hover:text-white text-foreground/70 text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-widest transition-colors border border-surface-soft hover:border-accent cursor-pointer">
                 {g.name || g.title}
               </span>
             ))}
@@ -227,25 +228,27 @@ export default function DetailPage({ loaderData }: Route.ComponentProps) {
 
           {/* MAL Stats Grid */}
           {malData && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-2 sm:gap-x-4 border-t-2 border-surface-soft pt-6 mt-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 border-t-2 border-surface-soft pt-4 sm:pt-6 mt-auto text-left">
               <div className="flex flex-col border-r-2 border-surface-soft pr-2 sm:pr-4">
-                <span className="text-[10px] font-mono text-accent font-bold uppercase tracking-widest bg-accent/10 inline-block px-2 py-0.5 mb-1 w-fit">SCORE</span>
-                <div className="flex items-end gap-2 flex-wrap">
-                  <span className="text-3xl font-display text-foreground leading-none">{malData.malInfo.score || 'N/A'}</span>
-                  <span className="text-[10px] font-mono text-foreground/50 mb-1">{malData.malInfo.scored_by?.toLocaleString()} users</span>
+                <span className="text-[9px] sm:text-[10px] font-mono text-accent font-bold uppercase tracking-widest bg-accent/10 inline-block px-1.5 sm:px-2 py-0.5 mb-1 w-fit">SCORE</span>
+                <div className="flex items-end gap-1.5 sm:gap-2 flex-wrap">
+                  <div className="flex flex-col">
+                    <span className="text-3xl font-bold">{detail.score || malData?.malInfo?.score || "N/A"}</span>
+                    <span className="text-xs text-white/50">{malData?.malInfo?.scored_by?.toLocaleString() || "0"} users</span>
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col md:border-r-2 md:border-surface-soft pl-2 sm:pl-4 md:px-4">
-                <span className="text-[10px] font-mono text-foreground/70 font-bold uppercase tracking-widest mb-1">RANK</span>
-                <span className="text-2xl font-display text-foreground leading-none">#{malData.malInfo.rank || '-'}</span>
+                <span className="text-[9px] sm:text-[10px] font-mono text-foreground/70 font-bold uppercase tracking-widest mb-1">RANK</span>
+                <span className="text-xl sm:text-2xl font-display text-foreground leading-none">#{malData.malInfo.rank || '-'}</span>
               </div>
               <div className="flex flex-col border-r-2 border-surface-soft pr-2 sm:pr-4 md:px-4">
-                <span className="text-[10px] font-mono text-foreground/70 font-bold uppercase tracking-widest mb-1">POPULARITY</span>
-                <span className="text-2xl font-display text-foreground leading-none">#{malData.malInfo.popularity || '-'}</span>
+                <span className="text-[9px] sm:text-[10px] font-mono text-foreground/70 font-bold uppercase tracking-widest mb-1">POPULARITY</span>
+                <span className="text-xl sm:text-2xl font-display text-foreground leading-none">#{malData.malInfo.popularity || '-'}</span>
               </div>
               <div className="flex flex-col pl-2 sm:pl-4">
-                <span className="text-[10px] font-mono text-foreground/70 font-bold uppercase tracking-widest mb-1">MEMBERS</span>
-                <span className="text-xl font-display text-foreground leading-none">{malData.malInfo.members?.toLocaleString() || '-'}</span>
+                <span className="text-[9px] sm:text-[10px] font-mono text-foreground/70 font-bold uppercase tracking-widest mb-1">MEMBERS</span>
+                <span className="text-lg sm:text-xl font-display text-foreground leading-none">{malData.malInfo.members?.toLocaleString() || '-'}</span>
               </div>
             </div>
           )}
@@ -253,7 +256,7 @@ export default function DetailPage({ loaderData }: Route.ComponentProps) {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex overflow-x-auto gap-2 mb-8 border-b-2 border-surface-soft pb-4 scrollbar-thin scrollbar-thumb-surface-soft scrollbar-track-transparent snap-x">
+      <div className="flex overflow-x-auto gap-1.5 sm:gap-2 mb-6 sm:mb-8 border-b-2 border-surface-soft pb-3 sm:pb-4 scrollbar-thin scrollbar-thumb-surface-soft scrollbar-track-transparent snap-x">
         {tabs.map((tab) => {
           if (tab.id === 'pictures' && (!malData?.malInfo?.pictures || malData.malInfo.pictures.length === 0)) return null;
           if (tab.id === 'music' && (!malData?.malInfo?.opening_themes?.length && !malData?.malInfo?.ending_themes?.length)) return null;
@@ -261,10 +264,10 @@ export default function DetailPage({ loaderData }: Route.ComponentProps) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`whitespace-nowrap flex-shrink-0 snap-start px-4 sm:px-6 py-2 sm:py-3 font-mono text-[10px] sm:text-xs uppercase tracking-widest font-bold border-2 transition-all ${
+              className={`whitespace-nowrap flex-shrink-0 snap-start px-3.5 sm:px-6 py-2 sm:py-3 font-mono text-[9px] sm:text-xs uppercase tracking-widest font-bold border-2 transition-all ${
                 activeTab === tab.id
-                  ? "bg-accent border-accent text-white shadow-[4px_4px_0px_rgba(255,59,59,0.5)] translate-y-[2px]"
-                  : "bg-surface border-surface-soft text-foreground/70 hover:bg-surface-soft hover:text-white hover:border-foreground/30 shadow-[4px_4px_0px_rgba(46,78,78,0.5)]"
+                  ? "bg-accent border-accent text-white shadow-[2px_2px_0px_rgba(255,59,59,0.5)] sm:shadow-[4px_4px_0px_rgba(255,59,59,0.5)] translate-y-[2px]"
+                  : "bg-surface border-surface-soft text-foreground/70 hover:bg-surface-soft hover:text-white hover:border-foreground/30 shadow-[2px_2px_0px_rgba(46,78,78,0.5)] sm:shadow-[4px_4px_0px_rgba(46,78,78,0.5)]"
               }`}
             >
               {tab.label}
@@ -287,14 +290,14 @@ export default function DetailPage({ loaderData }: Route.ComponentProps) {
                 </div>
                 <div className="flex flex-col gap-3 font-mono text-xs">
                   {[
-                    { label: "Type", value: malData?.malInfo?.type || detail.type },
-                    { label: "Episodes", value: malData?.malInfo?.episodes || detail.episodeList?.length },
-                    { label: "Status", value: malData?.malInfo?.status || detail.status },
+                    { label: "Type", value: detail.type || malData?.malInfo?.type },
+                    { label: "Episodes", value: Math.max(parseInt(detail.episodes) || 0, malData?.malInfo?.episodes || 0, detail.episodeList?.length || 0) || detail.episodes || malData?.malInfo?.episodes },
+                    { label: "Status", value: detail.status || malData?.malInfo?.status },
                     { label: "Aired", value: malData?.malInfo?.aired?.string },
                     { label: "Premiered", value: malData?.malInfo?.season ? `${malData.malInfo.season} ${malData.malInfo.year}` : null },
                     { label: "Broadcast", value: malData?.malInfo?.broadcast?.string },
                     { label: "Producers", value: malData?.malInfo?.producers?.length > 0 ? malData.malInfo.producers.map((p: any) => p.name).join(', ') : null },
-                    { label: "Studios", value: malData?.malInfo?.studios?.length > 0 ? malData.malInfo.studios.map((s: any) => s.name).join(', ') : detail.studios },
+                    { label: "Studios", value: detail.studios || (malData?.malInfo?.studios?.length > 0 ? malData.malInfo.studios.map((s: any) => s.name).join(', ') : null) },
                     { label: "Source", value: malData?.malInfo?.source },
                     { label: "Demographic", value: malData?.malInfo?.demographics?.length > 0 ? malData.malInfo.demographics.map((d: any) => d.name).join(', ') : null },
                     { label: "Duration", value: malData?.malInfo?.duration },

@@ -1,5 +1,17 @@
 import type { Route } from "./+types/api.yt-search";
 
+const PROXIES = [
+  { api: "https://pipedapi.kavin.rocks/streams/", embed: "https://piped.video/embed/" },
+  { api: "https://invidious.nerdvpn.de/api/v1/videos/", embed: "https://invidious.nerdvpn.de/embed/" },
+  { api: "https://invidious.snopyta.org/api/v1/videos/", embed: "https://invidious.snopyta.org/embed/" },
+  { api: "https://inv.tux.pizza/api/v1/videos/", embed: "https://inv.tux.pizza/embed/" }
+];
+
+async function getTrailerProxy(youtubeId: string): Promise<string> {
+  // Proxy Invidious yang aktif dan tidak memblokir iframe dengan Cloudflare
+  return `https://invidious.f5.si/embed/${youtubeId}`;
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
@@ -34,9 +46,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     const videoId = data?.items?.[0]?.id?.videoId;
 
     if (videoId) {
+      const embedUrl = await getTrailerProxy(videoId);
       return Response.json({
         videoId,
-        embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`
+        embedUrl
       });
     }
 

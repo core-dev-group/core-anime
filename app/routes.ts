@@ -20,5 +20,6 @@ export default [
   route("/api/proxy-stream", "routes/api.proxy-stream.ts"),
   route("api/yt-search", "routes/api.yt-search.ts"),
   route("api/sanka", "routes/api.sanka.ts"),
-  route("admin/providers", "routes/admin.providers.tsx")
+  route("admin/providers", "routes/admin.providers.tsx"),
+  route(".well-known/appspecific/com.chrome.devtools.json", "routes/devtools.ts")
 ] satisfies RouteConfig;

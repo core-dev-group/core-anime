@@ -109,6 +109,18 @@ async function fetchJikanCharacters(malId: number): Promise<MalCharacter[]> {
   return [];
 }
 
+const PROXIES = [
+  { api: "https://pipedapi.kavin.rocks/streams/", embed: "https://piped.video/embed/" },
+  { api: "https://invidious.nerdvpn.de/api/v1/videos/", embed: "https://invidious.nerdvpn.de/embed/" },
+  { api: "https://invidious.snopyta.org/api/v1/videos/", embed: "https://invidious.snopyta.org/embed/" },
+  { api: "https://inv.tux.pizza/api/v1/videos/", embed: "https://inv.tux.pizza/embed/" }
+];
+
+async function getTrailerProxy(youtubeId: string): Promise<string> {
+  // Proxy Invidious yang aktif dan tidak memblokir iframe dengan Cloudflare
+  return `https://invidious.f5.si/embed/${youtubeId}`;
+}
+
 async function fetchYouTubeTrailer(title: string): Promise<{ youtube_id: string; url: string; embed_url: string }> {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) {
@@ -131,10 +143,11 @@ async function fetchYouTubeTrailer(title: string): Promise<{ youtube_id: string;
       const data = await res.json();
       const videoId = data?.items?.[0]?.id?.videoId;
       if (videoId) {
+        const embed_url = await getTrailerProxy(videoId);
         return {
           youtube_id: videoId,
           url: `https://www.youtube.com/watch?v=${videoId}`,
-          embed_url: `https://www.youtube-nocookie.com/embed/${videoId}`
+          embed_url
         };
       }
     }
@@ -224,15 +237,29 @@ async function fetchAnilistData(malId: number): Promise<{ trailer: any, characte
 }
 
 // Function to call Groq to extract the clean anime title
-async function getCleanTitleFromGroq(rawTitle: string): Promise<string> {
+async function getCleanTitleFromGroq(sankaData: any): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY;
+  const rawTitle = typeof sankaData === 'string' ? sankaData : sankaData.title;
+  
   if (!apiKey) {
     console.warn("GROQ_API_KEY is missing. Using regex fallback.");
     // Fallback if no API key
-    return rawTitle.replace(/(sub indo|batch|episode|season|ova|movie|\\d+)/gi, "").trim();
+    let clean = rawTitle.replace(/(subtitle indonesia|sub indo|batch|episode\s*\d+|season\s*\d+|ova|movie)/gi, "");
+    clean = clean.replace(/\s+\d+$/, ""); // Remove trailing numbers (e.g. episode numbers)
+    clean = clean.replace(/\s+/g, " ").trim();
+    if (clean.length > 60) clean = clean.substring(0, 60); // MAL API limits query to 64 chars
+    return clean;
   }
 
   try {
+    let contextStr = `Title: "${rawTitle}"`;
+    if (typeof sankaData === 'object') {
+      if (sankaData.studios) contextStr += `\nStudio: ${sankaData.studios}`;
+      if (sankaData.type) contextStr += `\nType: ${sankaData.type}`;
+      if (sankaData.status) contextStr += `\nStatus: ${sankaData.status}`;
+      if (sankaData.episodes) contextStr += `\nEpisodes: ${sankaData.episodes}`;
+    }
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -244,11 +271,11 @@ async function getCleanTitleFromGroq(rawTitle: string): Promise<string> {
         messages: [
           {
             role: "system",
-            content: "You are a rigid parsing bot. Your ONLY job is to extract the pure Romaji or English anime title from the given string. Remove ALL tags ('Sub Indo', 'Batch', 'Episode X', 'Season Y', resolutions, etc). You MUST output ONLY the final extracted title as plain text. Do NOT add quotes. Do NOT add any conversational text like 'Here is the title' or 'However, ...'. If you add ANY extra words, the system will crash."
+            content: "You are an expert MyAnimeList database mapper. I will give you a title from an Indonesian streaming site, along with context like Studio, Type, and Episodes. Your ONLY job is to output the EXACT official Romaji title of this anime as it appears on MyAnimeList.\n\nRULES:\n1. Indonesian sites often use alternate names, English names, or nicknames (e.g., 'Hell Mode', 'Failure Frame', 'Slime Datta Ken'). You MUST translate/map it to the official Romaji title on MyAnimeList.\n2. Keep 'Season 2', 'Part 2', or Cour numbers so the search engine finds the correct sequel.\n3. REMOVE all Indonesian tags (Sub Indo, Batch, Episode 10, dll).\n4. Output ONLY the mapped official title as plain text. Do not add quotes, notes, or prefixes. If you are unsure, output the closest official Romaji name."
           },
           {
             role: "user",
-            content: `Extract clean title from: "${rawTitle}"`
+            content: `Extract the clean official title from this data:\n${contextStr}`
           }
         ],
         temperature: 0.1,
@@ -265,7 +292,11 @@ async function getCleanTitleFromGroq(rawTitle: string): Promise<string> {
     return data.choices[0].message.content.trim();
   } catch (error) {
     console.error("Error communicating with Groq:", error);
-    return rawTitle.replace(/(sub indo|batch|episode|season|ova|movie|\\d+)/gi, "").trim();
+    let clean = rawTitle.replace(/(subtitle indonesia|sub indo|batch|episode\s*\d+|season\s*\d+|ova|movie)/gi, "");
+    clean = clean.replace(/\s+\d+$/, "");
+    clean = clean.replace(/\s+/g, " ").trim();
+    if (clean.length > 60) clean = clean.substring(0, 60);
+    return clean;
   }
 }
 
@@ -344,8 +375,9 @@ function mapMalOfficialToJikan(malData: any): MalAnimeDetail {
   };
 }
 
-export async function getCompleteAnimeDetail(sankaTitle: string) {
-  const cacheKey = `mal_detail_v6_${sankaTitle}`;
+export async function getCompleteAnimeDetail(sankaData: any) {
+  const rawTitle = typeof sankaData === 'string' ? sankaData : sankaData.title;
+  const cacheKey = `mal_detail_v10_${rawTitle}`;
   const cached = getMemoryCache<any>(cacheKey);
   if (cached) return cached;
 
@@ -353,8 +385,8 @@ export async function getCompleteAnimeDetail(sankaTitle: string) {
   let malId = null;
 
   try {
-    // 1. Clean the title using Groq
-    const cleanTitle = await getCleanTitleFromGroq(sankaTitle);
+    // 1. Clean the title using Groq and full context
+    const cleanTitle = await getCleanTitleFromGroq(sankaData);
 
     // 2. Search Official MAL API to get the correct MAL ID
     const officialNode = await fetchMalOfficialSearch(cleanTitle);

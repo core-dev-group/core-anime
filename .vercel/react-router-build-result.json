@@ -29,7 +29,8 @@
       "routes/api.proxy-stream": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.yt-search": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.sanka": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/admin.providers": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+      "routes/admin.providers": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/devtools": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
       "root": {
@@ -217,6 +218,15 @@
         "config": {
           "runtime": "nodejs"
         }
+      },
+      "routes/devtools": {
+        "id": "routes/devtools",
+        "parentId": "root",
+        "file": "app/routes/devtools.ts",
+        "path": ".well-known/appspecific/com.chrome.devtools.json",
+        "config": {
+          "runtime": "nodejs"
+        }
       }
     }
   },
@@ -353,6 +363,12 @@
         "parentId": "root",
         "file": "routes/admin.providers.tsx",
         "path": "admin/providers"
+      },
+      "routes/devtools": {
+        "id": "routes/devtools",
+        "parentId": "root",
+        "file": "routes/devtools.ts",
+        "path": ".well-known/appspecific/com.chrome.devtools.json"
       }
     },
     "routeDiscovery": {
@@ -451,6 +467,10 @@
           {
             "file": "routes/admin.providers.tsx",
             "path": "admin/providers"
+          },
+          {
+            "file": "routes/devtools.ts",
+            "path": ".well-known/appspecific/com.chrome.devtools.json"
           }
         ]
       }
