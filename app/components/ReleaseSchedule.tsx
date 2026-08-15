@@ -33,33 +33,33 @@ export function ReleaseSchedule({ items }: ReleaseScheduleProps) {
     : [];
 
   return (
-    <div className="bg-surface border-2 border-surface-soft mb-10 relative">
+    <div className="bg-surface border-2 border-surface-soft mb-6 md:mb-10 relative">
       <div className="absolute -top-3 left-4 bg-background px-2 flex items-center gap-2">
         <div className="w-2 h-2 bg-accent animate-pulse"></div>
-        <h3 className="text-xl font-display uppercase tracking-widest text-foreground">Jadwal Rilis</h3>
+        <h3 className="text-lg sm:text-xl font-display uppercase tracking-widest text-foreground">Jadwal Rilis</h3>
       </div>
-      
+
       {/* Tabs */}
-      <div className="flex overflow-x-auto hide-scrollbar gap-1 pt-6 px-4 pb-0 border-b-2 border-surface-soft">
+      <div className="flex overflow-x-auto hide-scrollbar gap-1 pt-5 sm:pt-6 px-3 sm:px-4 pb-0 border-b-2 border-surface-soft">
         {DAYS.map((day, index) => (
           <button
             key={day}
             onClick={() => setActiveDay(index)}
-            className={`whitespace-nowrap px-4 py-2 border-t-2 border-l-2 border-r-2 text-sm font-mono font-bold uppercase transition-all duration-300 relative top-[2px] ${
-              safeActiveDay === index 
-                ? "bg-accent text-background border-accent" 
+            className={`whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 border-t-2 border-l-2 border-r-2 text-xs sm:text-sm font-mono font-bold uppercase transition-all duration-300 relative top-[2px] ${
+              safeActiveDay === index
+                ? "bg-accent text-background border-accent"
                 : "text-foreground/60 hover:text-foreground border-surface-soft bg-surface-soft/30 hover:bg-surface-soft/60"
             }`}
           >
             {day}
             {/* Hanya highlight 'Hari Ini' jika array harinya standar (7 hari) */}
-            {index === today && DAYS.length === 7 && <span className="ml-2 text-[9px] bg-background/20 px-1 py-0.5 border border-current">TODAY</span>}
+            {index === today && DAYS.length === 7 && <span className="ml-1 sm:ml-2 text-[8px] sm:text-[9px] bg-background/20 px-1 py-0.5 border border-current">TODAY</span>}
           </button>
         ))}
       </div>
 
       {/* Schedule Items */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-background/50">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 p-3 sm:p-4 bg-background/50">
         {dayItems.length > 0 ? (
           dayItems.map((anime: any, idx: number) => (
             <Link 

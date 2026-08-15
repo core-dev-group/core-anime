@@ -26,10 +26,10 @@ export function AnimeRow({ title, items, viewAllLink }: AnimeRowProps) {
   };
 
   return (
-    <div className="mb-12 relative group/section">
-      <div className="flex items-center justify-between mb-4 px-4 md:px-8">
+    <div className="mb-6 md:mb-12 relative group/section">
+      <div className="flex items-center justify-between mb-3 md:mb-4 px-4 md:px-8">
         <div className="flex items-center gap-3 md:gap-4">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-display uppercase tracking-widest text-foreground pl-3 md:pl-4 border-l-4 border-accent">
+          <h2 className="text-base sm:text-xl md:text-2xl font-display uppercase tracking-widest text-foreground pl-2.5 md:pl-4 border-l-4 border-accent">
             {title}
           </h2>
         </div>
@@ -37,7 +37,7 @@ export function AnimeRow({ title, items, viewAllLink }: AnimeRowProps) {
         {viewAllLink && (
           <Link
             to={viewAllLink}
-            className="text-[10px] sm:text-xs font-mono font-bold text-foreground/70 hover:text-accent transition-colors border border-surface-soft hover:border-accent px-2 py-1 bg-surface shrink-0 flex items-center gap-1 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]"
+            className="text-[9px] sm:text-xs font-mono font-bold text-foreground/70 hover:text-accent transition-colors border border-surface-soft hover:border-accent px-2 py-0.5 sm:py-1 bg-surface shrink-0 flex items-center gap-1 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]"
           >
             LIHAT SEMUA &raquo;
           </Link>
@@ -70,10 +70,10 @@ export function AnimeRow({ title, items, viewAllLink }: AnimeRowProps) {
       <div className="relative">
         <div
           ref={scrollContainerRef}
-          className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 pt-2 px-4 md:px-8 hide-scrollbar scroll-smooth"
+          className="flex overflow-x-auto snap-x snap-mandatory gap-3 sm:gap-4 pb-4 sm:pb-6 pt-1 sm:pt-2 px-4 md:px-8 hide-scrollbar scroll-smooth"
         >
           {items.map((anime, index) => (
-            <div key={anime.slug || anime.id || index} className="snap-start shrink-0 w-[140px] md:w-[180px] lg:w-[220px]">
+            <div key={anime.slug || anime.id || index} className="snap-start shrink-0 w-[125px] sm:w-[155px] md:w-[180px] lg:w-[220px]">
               <AnimeCard anime={anime} />
             </div>
           ))}

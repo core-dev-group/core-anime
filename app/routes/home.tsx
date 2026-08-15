@@ -50,8 +50,14 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const popularAnime = Array.isArray(popularData) ? popularData : [];
   const ongoingAnime = Array.isArray(ongoingData) ? ongoingData : [];
   
-  // Ambil 5 teratas untuk hero banner dari latest anime
-  const heroItems = latestAnime.slice(0, 5);
+  // Filter anime yang memiliki poster/thumbnail valid untuk Hero Banner (prioritas gambar HD/terlengkap)
+  const heroCandidates = [...ongoingAnime, ...latestAnime, ...popularAnime];
+  const validHeroAnime = heroCandidates.filter(
+    (a, idx, self) =>
+      Boolean(a.thumbnail && a.thumbnail.startsWith("http")) &&
+      self.findIndex(t => (t.slug || t.id) === (a.slug || a.id)) === idx
+  );
+  const heroItems = validHeroAnime.slice(0, 5);
   
   // Top Anime untuk Sidebar dari popularAnime (atau fallback ke latest)
   const topAnime = popularAnime.length > 0 ? popularAnime.slice(0, 10) : latestAnime.slice(3, 13);
