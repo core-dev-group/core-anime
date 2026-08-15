@@ -27,6 +27,8 @@
       "routes/privacy": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.saweria": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api.proxy-stream": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.yt-search": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.sanka": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/admin.providers": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
@@ -189,6 +191,24 @@
           "runtime": "nodejs"
         }
       },
+      "routes/api.yt-search": {
+        "id": "routes/api.yt-search",
+        "parentId": "root",
+        "file": "app/routes/api.yt-search.ts",
+        "path": "api/yt-search",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.sanka": {
+        "id": "routes/api.sanka",
+        "parentId": "root",
+        "file": "app/routes/api.sanka.ts",
+        "path": "api/sanka",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
       "routes/admin.providers": {
         "id": "routes/admin.providers",
         "parentId": "root",
@@ -316,6 +336,18 @@
         "file": "routes/api.proxy-stream.ts",
         "path": "/api/proxy-stream"
       },
+      "routes/api.yt-search": {
+        "id": "routes/api.yt-search",
+        "parentId": "root",
+        "file": "routes/api.yt-search.ts",
+        "path": "api/yt-search"
+      },
+      "routes/api.sanka": {
+        "id": "routes/api.sanka",
+        "parentId": "root",
+        "file": "routes/api.sanka.ts",
+        "path": "api/sanka"
+      },
       "routes/admin.providers": {
         "id": "routes/admin.providers",
         "parentId": "root",
@@ -407,6 +439,14 @@
           {
             "file": "routes/api.proxy-stream.ts",
             "path": "/api/proxy-stream"
+          },
+          {
+            "file": "routes/api.yt-search.ts",
+            "path": "api/yt-search"
+          },
+          {
+            "file": "routes/api.sanka.ts",
+            "path": "api/sanka"
           },
           {
             "file": "routes/admin.providers.tsx",

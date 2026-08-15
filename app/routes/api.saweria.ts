@@ -63,8 +63,8 @@ export async function action({ request }: ActionFunctionArgs) {
     await saveDonation(donation);
     console.log(`[Saweria Webhook] Donasi diterima: ${donation.donator_name} - ${donation.amount_raw}`);
     return Response.json({ success: true, message: "Donation recorded" }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[Saweria Webhook] Error saving donation:", error);
-    return Response.json({ error: "Failed to save donation" }, { status: 500 });
+    return Response.json({ error: "Failed to save donation", details: error?.message || String(error) }, { status: 500 });
   }
 }
