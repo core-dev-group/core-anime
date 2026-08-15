@@ -28,23 +28,24 @@ export function AnimeRow({ title, items, viewAllLink }: AnimeRowProps) {
   return (
     <div className="mb-12 relative group/section">
       <div className="flex items-center justify-between mb-4 px-4 md:px-8">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xl md:text-2xl font-display uppercase tracking-widest text-foreground pl-3 md:pl-4 border-l-4 border-accent">
+        <div className="flex items-center gap-3 md:gap-4">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-display uppercase tracking-widest text-foreground pl-3 md:pl-4 border-l-4 border-accent">
             {title}
           </h2>
-          {viewAllLink && (
-            <Link 
-              to={viewAllLink}
-              className="text-xs font-mono font-bold text-foreground/50 hover:text-accent transition-colors border border-surface-soft hover:border-accent px-2 py-1 bg-surface hidden sm:block"
-            >
-              LIHAT SEMUA &raquo;
-            </Link>
-          )}
         </div>
-        
+
+        {viewAllLink && (
+          <Link
+            to={viewAllLink}
+            className="text-[10px] sm:text-xs font-mono font-bold text-foreground/70 hover:text-accent transition-colors border border-surface-soft hover:border-accent px-2 py-1 bg-surface shrink-0 flex items-center gap-1 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]"
+          >
+            LIHAT SEMUA &raquo;
+          </Link>
+        )}
+
         {/* Navigation Buttons (Desktop Only, Visible on Hover) */}
         <div className="hidden md:flex gap-2 opacity-0 group-hover/section:opacity-100 transition-opacity duration-300">
-          <button 
+          <button
             onClick={scrollLeft}
             className="w-8 h-8 flex items-center justify-center border-2 border-surface-soft bg-surface hover:border-accent hover:bg-accent/20 hover:text-accent transition-colors"
             aria-label="Scroll Left"
@@ -53,7 +54,7 @@ export function AnimeRow({ title, items, viewAllLink }: AnimeRowProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <button 
+          <button
             onClick={scrollRight}
             className="w-8 h-8 flex items-center justify-center border-2 border-surface-soft bg-surface hover:border-accent hover:bg-accent/20 hover:text-accent transition-colors"
             aria-label="Scroll Right"
@@ -64,10 +65,10 @@ export function AnimeRow({ title, items, viewAllLink }: AnimeRowProps) {
           </button>
         </div>
       </div>
-      
+
       {/* Horizontal Scroll Container */}
       <div className="relative">
-        <div 
+        <div
           ref={scrollContainerRef}
           className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 pt-2 px-4 md:px-8 hide-scrollbar scroll-smooth"
         >
@@ -77,10 +78,10 @@ export function AnimeRow({ title, items, viewAllLink }: AnimeRowProps) {
             </div>
           ))}
         </div>
-        
+
         {/* Gradient fades on edges */}
-        <div className="absolute top-0 bottom-0 left-0 w-8 bg-gradient-to-r from-background to-transparent pointer-events-none hidden md:block z-10"></div>
-        <div className="absolute top-0 bottom-0 right-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none hidden md:block z-10"></div>
+        <div className="absolute top-0 bottom-0 left-0 w-6 md:w-8 bg-gradient-to-r from-background via-background/40 to-transparent pointer-events-none z-10 opacity-70 md:opacity-100"></div>
+        <div className="absolute top-0 bottom-0 right-0 w-6 md:w-8 bg-gradient-to-l from-background via-background/40 to-transparent pointer-events-none z-10 opacity-70 md:opacity-100"></div>
       </div>
     </div>
   );

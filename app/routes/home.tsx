@@ -88,9 +88,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 <ReleaseSchedule items={scheduleItems} />
                 
                 <div className="flex flex-col gap-4 mt-4">
-                  <AnimeRow title="Sedang Tayang (Ongoing)" items={row1} />
+                  <AnimeRow title="Sedang Tayang (Ongoing)" items={row1} viewAllLink="/directory" />
                   {row2.length > 0 && <AnimeRow title="Anime Tamat" items={row2} viewAllLink="/complete" />}
-                  {row3.length > 0 && <AnimeRow title="Baru Ditambahkan" items={row3} />}
+                  {row3.length > 0 && <AnimeRow title="Baru Ditambahkan" items={row3} viewAllLink="/directory" />}
                 </div>
               </div>
             ) : (
