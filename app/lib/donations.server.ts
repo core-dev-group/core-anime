@@ -1,5 +1,4 @@
-import { collection, doc, getDocs, setDoc, query, orderBy, getDoc } from 'firebase/firestore';
-import { db } from '~/lib/firebase';
+import { db, collection, doc, getDocs, setDoc, query, orderBy, getDoc } from '~/lib/firebase';
 
 // Define the shape of our Saweria Webhook payload
 export interface SaweriaDonation {
