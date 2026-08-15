@@ -228,40 +228,94 @@ export function Sidebar({ topAnime, topDonators = [] }: SidebarProps) {
           <p className="text-[10px] font-mono text-foreground/50 mb-2">
             {topDonators.length > 0 ? '*Daftar Top Donator' : '*Belum ada donasi. Jadilah yang pertama!'}
           </p>
-          {displayDonators.map((donator, idx) => (
-            <div key={donator.name} className="flex flex-col border border-surface-soft p-3 bg-background group hover:border-accent transition-colors">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2 shrink-0 max-w-[65%]">
-                  <span className="font-mono font-bold text-xs tracking-widest text-foreground group-hover:text-accent transition-colors">
-                    {idx + 1}.
-                  </span>
-                  {donator.photoURL ? (
-                    <img src={donator.photoURL} alt={donator.name} className="w-5 h-5 rounded-full object-cover border border-surface-soft shrink-0" />
-                  ) : (
-                    <div className="w-5 h-5 rounded-full bg-surface-soft flex items-center justify-center text-[8px] font-bold text-foreground/50 shrink-0">
-                      {donator.name.charAt(0).toUpperCase()}
+          {displayDonators.map((donator, idx) => {
+            const isRank1 = idx === 0;
+            const tierColors = {
+              DIAMOND: 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.4)]',
+              PLATINUM: 'bg-purple-500/20 text-purple-300 border-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.4)]',
+              GOLD: 'bg-yellow-500/20 text-yellow-300 border-yellow-400 shadow-[0_0_8px_rgba(234,179,8,0.4)]',
+              SILVER: 'bg-slate-400/20 text-slate-200 border-slate-300',
+              BRONZE: 'bg-amber-800/20 text-amber-500 border-amber-700'
+            };
+
+            const rankBadgeColors = [
+              'bg-yellow-400 text-black border-yellow-300 font-black',
+              'bg-slate-200 text-black border-slate-100 font-black',
+              'bg-amber-600 text-white border-amber-500 font-black'
+            ];
+
+            return (
+              <div
+                key={donator.name}
+                className={`flex flex-col border-2 p-3 bg-background group transition-all relative ${
+                  isRank1
+                    ? 'border-yellow-400 shadow-[4px_4px_0px_rgba(234,179,8,0.5)]'
+                    : 'border-surface-soft hover:border-accent shadow-[3px_3px_0px_rgba(46,78,78,0.4)]'
+                }`}
+              >
+                {isRank1 && (
+                  <div className="absolute -top-2.5 right-2 bg-yellow-400 text-black text-[9px] font-mono font-black uppercase px-2 py-0.5 border border-yellow-300 tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
+                    ★ TOP SUPPORTER ★
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 mb-2.5">
+                  {/* Big Retro Avatar Frame */}
+                  <div className="relative shrink-0">
+                    <div className={`w-12 h-12 border-2 bg-surface overflow-hidden flex items-center justify-center ${
+                      isRank1
+                        ? 'border-yellow-400 shadow-[2px_2px_0px_rgba(234,179,8,0.6)]'
+                        : 'border-surface-soft group-hover:border-accent shadow-[2px_2px_0px_rgba(0,0,0,0.6)]'
+                    }`}>
+                      {donator.photoURL ? (
+                        <img
+                          src={donator.photoURL}
+                          alt={donator.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-surface-soft to-surface flex items-center justify-center font-display text-lg text-foreground/70">
+                          {donator.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <span className="font-mono font-bold text-xs tracking-widest text-foreground group-hover:text-accent transition-colors truncate">
-                    {donator.name}
-                  </span>
+
+                    {/* Rank Number Badge */}
+                    <div className={`absolute -bottom-1.5 -left-1.5 w-5 h-5 flex items-center justify-center text-[10px] font-mono border ${
+                      rankBadgeColors[idx] || 'bg-surface border-surface-soft text-foreground/70'
+                    }`}>
+                      {idx + 1}
+                    </div>
+                  </div>
+
+                  {/* Name + Tier + Amount */}
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-1 mb-0.5">
+                      <span className="font-mono font-bold text-xs tracking-wider text-foreground group-hover:text-accent transition-colors truncate">
+                        {donator.name}
+                      </span>
+                      <span className={`text-[8px] font-mono font-bold px-1.5 py-0.2 border shrink-0 ${
+                        tierColors[donator.tier as keyof typeof tierColors] || tierColors.BRONZE
+                      }`}>
+                        {donator.tier}
+                      </span>
+                    </div>
+
+                    <span className="font-display text-lg tracking-wide text-foreground/95 leading-none">
+                      {donator.amount_formatted}
+                    </span>
+                  </div>
                 </div>
-                <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 ${
-                  donator.tier === 'DIAMOND' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500' :
-                  donator.tier === 'PLATINUM' ? 'bg-purple-500/20 text-purple-400 border border-purple-500' :
-                  donator.tier === 'GOLD' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500' :
-                  donator.tier === 'SILVER' ? 'bg-slate-400/20 text-slate-300 border border-slate-400' :
-                  'bg-orange-700/20 text-orange-600 border border-orange-700'
-                }`}>
-                  {donator.tier}
-                </span>
+
+                {/* Message Speech Bubble */}
+                {donator.message && (
+                  <div className="bg-surface/80 border-l-2 border-accent px-2 py-1 mt-1 text-[11px] font-mono text-foreground/80 italic break-words">
+                    "{donator.message}"
+                  </div>
+                )}
               </div>
-              <span className="font-display text-lg text-foreground/90">{donator.amount_formatted}</span>
-              <p className="text-[10px] font-mono text-foreground/50 mt-1 italic border-l-2 border-surface-soft pl-2">
-                "{donator.message}"
-              </p>
-            </div>
-          ))}
+            );
+          })}
           
           <Link 
             to="/donate"
