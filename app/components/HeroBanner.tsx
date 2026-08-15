@@ -42,7 +42,13 @@ export function HeroBanner({ items }: HeroBannerProps) {
             src={getImageUrl(anime)}
             alt={anime.title}
             className="w-full h-full object-cover object-top opacity-80 md:opacity-50"
-            onError={(e) => { e.currentTarget.src = "https://placehold.co/800x1200/111111/ff3b3b?text=CORE+ANIME&font=mono"; }}
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.src.includes('placehold.co')) {
+                target.src = "https://placehold.co/800x1200/111111/ff3b3b?text=CORE+ANIME&font=mono";
+              }
+            }}
           />
           {/* Deep cinematic gradients */}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 md:via-background/80 to-background/20 md:to-transparent"></div>
