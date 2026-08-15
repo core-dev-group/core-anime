@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { doc, increment, updateDoc, setDoc, getDoc, runTransaction } from "firebase/firestore";
-import { db } from "~/lib/firebase.client";
+import { db } from "~/lib/firebase";
 import { useAuth } from "./useAuth";
 
 export function useWatchTracker(animeId: string) {

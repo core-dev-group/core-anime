@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
-import { db } from "~/lib/firebase.client";
+import { db } from "~/lib/firebase";
 import { useAuth } from "./useAuth";
 import type { UnifiedAnime } from "~/lib/sankaClient";
 

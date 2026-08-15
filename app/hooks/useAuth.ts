@@ -8,7 +8,7 @@ import {
   type User
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { auth, db } from "~/lib/firebase.client";
+import { auth, db } from "~/lib/firebase";
 
 export interface UserProfile {
   uid: string;

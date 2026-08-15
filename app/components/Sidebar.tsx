@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
-import { db } from "~/lib/firebase.client";
+import { db } from "~/lib/firebase";
 
 interface SidebarProps {
   topAnime: any[];

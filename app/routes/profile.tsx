@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useCallback } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
-import { auth, db } from "~/lib/firebase.client";
+import { auth, db } from "~/lib/firebase";
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '~/lib/cropImage';
 
