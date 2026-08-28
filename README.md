@@ -38,42 +38,6 @@ Proyek ini dibangun di atas fondasi teknologi modern tingkat produksi:
 - **Database & Auth (Real-time)**: [Firebase Firestore & Firebase Auth](https://firebase.google.com/)
 - **Deployment**: [Vercel](https://vercel.com/) (Serverless Edge Functions)
 
-## 📦 Panduan Instalasi Lokal
-
-Ingin menjalankan proyek ini di komputer Anda sendiri? Ikuti langkah-langkah berikut:
-
-1. **Clone repository ini**
-   ```bash
-   git clone https://github.com/kodel-dev/core-anime.git
-   cd core-anime
-   ```
-
-2. **Install semua dependensi**
-   ```bash
-   npm install
-   ```
-
-3. **Konfigurasi Environment Variables**
-   Buat file `.env` di *root directory* dan masukkan konfigurasi *database* Prisma Anda:
-   ```env
-   DATABASE_URL="postgresql://user:password@host:port/dbname?schema=public"
-   ```
-
-4. **Konfigurasi Firebase**
-   Copy semua konfigurasi Firebase dari [console.firebase.google.com](https://console.firebase.google.com) > Project Settings > Your Apps ke file `.env`, ikuti format di `.env.example`. **Jangan hardcode key ke dalam source code.**
-
-5. **Generate Prisma Client**
-   ```bash
-   npx prisma generate
-   ```
-
-6. **Jalankan server pengembangan (Development)**
-   ```bash
-   npm run dev
-   ```
-
-7. Buka `http://localhost:5173` di browser Anda!
-
 ## 🤖 Praktik SEO & Keamanan
 
 Aplikasi ini telah mematuhi standar SEO terbaru dan didesain untuk menghindari *flagging* otomatis (sebagai situs bajakan) oleh mesin pencari AI. Penggunaan *metadata* difokuskan pada kata kunci "Database Anime", "Komunitas", dan "Indeks Episode" untuk memastikan reputasi situs tetap aman dan diindeks secara positif oleh Google. Aplikasi ini juga telah dilengkapi dengan halaman perlindungan hukum seperti **Privacy Policy** dan **DMCA**.
